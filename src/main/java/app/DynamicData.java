@@ -30,8 +30,10 @@ import org.jfree.data.xy.XYDataset;
 
 public class DynamicData extends ApplicationFrame{
 
-	public TimeSeries series;
+	public TimeSeries series1;
 	public TimeSeries series2;
+	public TimeSeries series3;
+	public TimeSeries series4;
 	private SerialPort serialPort;
 
 	public  double  dataValueMcu = 50D;
@@ -48,14 +50,14 @@ public class DynamicData extends ApplicationFrame{
 	public  int[] arrValues = new int[10000];
 
 	public  Label labelPortState;
-	public static String portClose = "Порт занят/закрыт";
-	public static String portOpen = "Порт открыт";
+	public static String portClose = "   Порт занят/закрыт ";
+	public static String portOpen = "   Порт открыт ";
 
 	public static String[] numbersCOMPorts = {"COM1","COM2","COM3","COM4","COM5","COM6","COM7","COM8","COM9","COM10","COM11","COM12","COM13","COM14","COM15","COM16"};
 
 	String strTmp = "NUMBER" + "\t" + "VALUE" + "\n";
 
-	public JComboBox comboBox_chooserCOMPort = new JComboBox();
+	public  JComboBox comboBox_chooserCOMPort = new JComboBox();
 
 	public  int chaneelCounter = 1;
 
@@ -67,13 +69,17 @@ public class DynamicData extends ApplicationFrame{
 
 		public DemoPanel(){
 			super(new BorderLayout());
-			series = new TimeSeries("ADC data 1", DynamicData.class$org$jfree$data$time$Millisecond != null ? DynamicData.class$org$jfree$data$time$Millisecond : (DynamicData.class$org$jfree$data$time$Millisecond = DynamicData.class$("org.jfree.data.time.Millisecond")));
+			series1 = new TimeSeries("ADC data 1", DynamicData.class$org$jfree$data$time$Millisecond != null ? DynamicData.class$org$jfree$data$time$Millisecond : (DynamicData.class$org$jfree$data$time$Millisecond = DynamicData.class$("org.jfree.data.time.Millisecond")));
 			series2 = new TimeSeries("ADC data 2", DynamicData.class$org$jfree$data$time$Millisecond != null ? DynamicData.class$org$jfree$data$time$Millisecond : (DynamicData.class$org$jfree$data$time$Millisecond = DynamicData.class$("org.jfree.data.time.Millisecond")));
+			series3 = new TimeSeries("ADC data 3", DynamicData.class$org$jfree$data$time$Millisecond != null ? DynamicData.class$org$jfree$data$time$Millisecond : (DynamicData.class$org$jfree$data$time$Millisecond = DynamicData.class$("org.jfree.data.time.Millisecond")));
+			series4 = new TimeSeries("ADC data 4", DynamicData.class$org$jfree$data$time$Millisecond != null ? DynamicData.class$org$jfree$data$time$Millisecond : (DynamicData.class$org$jfree$data$time$Millisecond = DynamicData.class$("org.jfree.data.time.Millisecond")));
 
-			TimeSeriesCollection timeseriescollection = new TimeSeriesCollection(series);
+			TimeSeriesCollection timeseriescollection1 = new TimeSeriesCollection(series1);
 			TimeSeriesCollection timeseriescollection2 = new TimeSeriesCollection(series2);
+			TimeSeriesCollection timeseriescollection3 = new TimeSeriesCollection(series3);
+			TimeSeriesCollection timeseriescollection4 = new TimeSeriesCollection(series4);
 
-			ChartPanel chartpanel = new ChartPanel(createChart(timeseriescollection, timeseriescollection2));
+			ChartPanel chartpanel = new ChartPanel(createChart(timeseriescollection1, timeseriescollection2, timeseriescollection3, timeseriescollection4));
 			chartpanel.setPreferredSize(new Dimension(900, 500));
 
 			// добавляем панель
@@ -132,14 +138,21 @@ public class DynamicData extends ApplicationFrame{
 		}
 
 
-		private JFreeChart createChart(XYDataset xydataset, XYDataset xydataset2){
+		private JFreeChart createChart(XYDataset xydataset, XYDataset xydataset2, XYDataset xydataset3, XYDataset xydataset4){
 			JFreeChart jfreechart = ChartFactory.createTimeSeriesChart("Осциллограф - самописец", "Time", "Value", xydataset, true, true, false);
 
 			XYPlot xyplot = (XYPlot)jfreechart.getPlot();
 			xyplot.setDataset(2, xydataset2);
+			xyplot.setDataset(3, xydataset3);
+			xyplot.setDataset(4, xydataset4);
 
 			xyplot.setRenderer(2, new HighLowRenderer());
+//	    xyplot.setRenderer(3, new CyclicXYItemRenderer(2));
+			xyplot.setRenderer(3, new HighLowRenderer());
+			xyplot.setRenderer(4, new HighLowRenderer());
 			XYItemRenderer renderer = xyplot.getRenderer();
+
+
 
 			ValueAxis valueaxis = xyplot.getDomainAxis();
 			valueaxis.setAutoRange(true);
@@ -209,7 +222,7 @@ public class DynamicData extends ApplicationFrame{
 					SerialPort.STOPBITS_1,
 					SerialPort.PARITY_NONE);
 			//Включаем аппаратное управление потоком (для FT232 нжуно отключать)
-//            serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN | 
+//            serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN |
 //                                          SerialPort.FLOWCONTROL_RTSCTS_OUT);
 			//Устанавливаем ивент лисенер и маску
 			serialPort.addEventListener(new PortReader(), SerialPort.MASK_RXCHAR);
@@ -238,9 +251,9 @@ public class DynamicData extends ApplicationFrame{
 
 //                            iArr = serialPort.readIntArray();
 //                            dataValueMcu = iArr[0];
-//                            series.add(new Millisecond(), dataValueMcu);
+//                            series1.add(new Millisecond(), dataValueMcu);
 //			    series2.add(new Millisecond(), dataValueMcu + 10.0);
-//                            
+//
 //                            //сохраняем значения для файла
 //                            arrNumbers[counterNumber] = counterNumber;
 //                            arrValues[counterNumber] = (int)dataValueMcu;
@@ -249,12 +262,14 @@ public class DynamicData extends ApplicationFrame{
 							if (chaneelCounter == 1) {
 								iArr = serialPort.readIntArray();
 								dataValueMcu = iArr[0];
-								series.add(new Millisecond(), dataValueMcu);
+								series1.add(new Millisecond(), dataValueMcu);
 								chaneelCounter = 2;
 							} else {
 								iArr = serialPort.readIntArray();
 								dataValueMcu = iArr[0];
 								series2.add(new Millisecond(), dataValueMcu);
+								series3.add(new Millisecond(), dataValueMcu + 5.0);
+								series4.add(new Millisecond(), dataValueMcu + 25.0);
 								chaneelCounter = 1;
 							}
 						}
@@ -299,6 +314,7 @@ public class DynamicData extends ApplicationFrame{
 //            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
+
 
 
 
