@@ -12,6 +12,8 @@ import java.awt.event.ItemListener;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 
 import jssc.SerialPort;
@@ -31,21 +33,6 @@ import org.jfree.data.xy.XYDataset;
 
 public class DynamicData extends ApplicationFrame{
 
-	private TimeSeries series1;
-	private TimeSeries series2;
-	private TimeSeries series3;
-	private TimeSeries series4;
-
-	private SerialPort serialPort;
-
-	private double  dataValueMcu = 0;
-	private int[] iArr;
-
-	private boolean startStopAction = false;
-	private boolean recordAction = false;
-
-	public Label label_portState;
-
 	public static final  String PORT_CLOSE = "   Порт занят/закрыт ";
 	public static final  String PORT_OPEN = "   Порт открыт ";
 	public static final  String[] NUMBERS_OF_COM_PORTS = {"COM1","COM2","COM3","COM4","COM5","COM6","COM7","COM8","COM9","COM10","COM11","COM12","COM13","COM14","COM15","COM16"};
@@ -63,22 +50,29 @@ public class DynamicData extends ApplicationFrame{
 	private static final double MAX_AXIS_VALUE = 255D;
 	private static final String SIGNATURE_HEADER_DATA_CHANNELS = "NUMBER" + "\t" + "CH1"+ "\t" + "CH2"+ "\t" + "CH3"+ "\t" + "CH4";
 
-	StringBuilder strBuilderFile = new StringBuilder();
-	//    String strTmp = "NUMBER" + "\t" + "VALUE" + "\n";
-	String strTmp;
+	private TimeSeries series1;
+	private TimeSeries series2;
+	private TimeSeries series3;
+	private TimeSeries series4;
 
+	private SerialPort serialPort;
 	public  JComboBox comboBox_chooserCOMPort = new JComboBox();
+	public Label label_portState;
+
+	private boolean startStopAction = false;
+	private boolean recordAction = false;
 
 	public  int chaneelCounter = 1;
-
+	private double  dataValueMcu = 0;
+	private int[] iArr;
+	StringBuilder strBuilderFile = new StringBuilder();
+	String strTmp;
 	ArrayList<Integer> values1 = new ArrayList<>();
 	ArrayList<Integer> values2 = new ArrayList<>();
 	ArrayList<Integer> values3 = new ArrayList<>();
 	ArrayList<Integer> values4 = new ArrayList<>();
 
-
 	class DemoPanel extends JPanel implements ActionListener{
-
 		public DemoPanel(){
 			super(new BorderLayout());
 			series1 = new TimeSeries(ADC_1_DATA, DynamicData.class$org$jfree$data$time$Millisecond != null ? DynamicData.class$org$jfree$data$time$Millisecond : (DynamicData.class$org$jfree$data$time$Millisecond = DynamicData.class$("org.jfree.data.time.Millisecond")));
@@ -99,12 +93,12 @@ public class DynamicData extends ApplicationFrame{
 			jpanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 
 			// создаем  управляющие элементы ...
-			//кнопка
+			//кнопка - старт/стоп
 			JButton btn_startStop = new JButton(BTN_START_STOP);
 			btn_startStop.setActionCommand(START_STOP_MEASURE);
 			btn_startStop.addActionListener(this);
 
-			//переключатель
+			//переключатель - запись?
 			Checkbox checkbox_record = new Checkbox(CHECKBOX_RECORD);
 			checkbox_record.setFont(new Font("tahoma", Font.BOLD, 18));
 			checkbox_record.setState(recordAction);
@@ -116,28 +110,32 @@ public class DynamicData extends ApplicationFrame{
 					} else{
 						recordAction = true;
 					}
-//                        System.out.println("chek box !");
-//                        System.out.println("record action = " + recordAction);
 				}
 			});
 
-			//надпись для вывода текста
+			//надпись для вывода текста - информация о состоянии COM порта
 			label_portState = new Label(PORT_CLOSE);
 			label_portState.setFont(new Font("tahoma", Font.BOLD, 18));
 
-			//раскрывающейся список
-//		JComboBox comboBox_chooserCOMPort = new JComboBox();
-//                comboBox_chooserCOMPort.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+			//раскрывающейся список - выбор COM порта
 			comboBox_chooserCOMPort.setModel(new javax.swing.DefaultComboBoxModel(NUMBERS_OF_COM_PORTS));
 			comboBox_chooserCOMPort.setSelectedIndex(6);
-//		comboBox_chooserCOMPort.addItemListener(new ItemListener() {
-//		    @Override
-//		    public void itemStateChanged(ItemEvent e) {
-//			System.out.println("addItemListener - ItemListener - itemStateChanged");
-//			System.out.println("chooser com port = " + );
-//		    }
-//		});
-
+			comboBox_chooserCOMPort.addItemListener(new ItemListener() {
+				@Override
+				public void itemStateChanged(ItemEvent e) {
+					System.out.println("--- this is item listner for chooser COM port");
+					if(serialPort.isOpened()){
+						try {
+							serialPort.closePort();
+						} catch (SerialPortException ex) {
+							Logger.getLogger(DynamicData.class.getName()).log(Level.SEVERE, null, ex);
+						}
+						uartInit();
+					}else{
+						uartInit();
+					}
+				}
+			});
 
 			// добавляем разные управляющие элементы на панель
 			jpanel.add(comboBox_chooserCOMPort);
@@ -148,7 +146,6 @@ public class DynamicData extends ApplicationFrame{
 			add(chartpanel);
 			add(jpanel, "South");
 		}
-
 
 		private JFreeChart createChart(XYDataset xydataset, XYDataset xydataset2, XYDataset xydataset3, XYDataset xydataset4){
 			JFreeChart jfreechart = ChartFactory.createTimeSeriesChart(TITLE_CHART, AXIS_X_NAME, AXIS_Y_NAME, xydataset, true, true, false);
@@ -162,8 +159,6 @@ public class DynamicData extends ApplicationFrame{
 			xyplot.setRenderer(3, new HighLowRenderer());
 			xyplot.setRenderer(4, new HighLowRenderer());
 			XYItemRenderer renderer = xyplot.getRenderer();
-
-
 
 			ValueAxis valueaxis = xyplot.getDomainAxis();
 			valueaxis.setAutoRange(true);
@@ -193,7 +188,6 @@ public class DynamicData extends ApplicationFrame{
 
 	}
 
-
 	static Class class$org$jfree$data$time$Millisecond; /* synthetic field */
 
 	public DynamicData (String s){
@@ -218,11 +212,8 @@ public class DynamicData extends ApplicationFrame{
 
 
 
-
-
 	public  void uartInit(){
 		//Передаём в конструктор имя порта
-//        serialPort = new SerialPort("COM7");
 		serialPort = new SerialPort(comboBox_chooserCOMPort.getSelectedItem().toString());
 		try {
 			//Открываем порт
@@ -241,7 +232,6 @@ public class DynamicData extends ApplicationFrame{
 			serialPort.addEventListener(new PortReader(), SerialPort.MASK_RXCHAR);
 			//Отправляем запрос устройству
 			serialPort.writeString("1"); //начинаем с канала 1
-
 		}
 		catch (SerialPortException ex) {
 			System.out.println(ex);
@@ -253,10 +243,8 @@ public class DynamicData extends ApplicationFrame{
 
 
 	private class PortReader implements SerialPortEventListener {
-
 		@Override
 		public void serialEvent(SerialPortEvent event) {
-
 			synchronized(event){
 				if(event.isRXCHAR() && event.getEventValue() > 0){
 //		    System.out.println("event.isRXCHAR() && event.getEventValue() > 0   is ok");
@@ -299,9 +287,7 @@ public class DynamicData extends ApplicationFrame{
 								serialPort.writeString("1");
 								chaneelCounter = 1;
 							}
-
 						}
-
 					}
 					catch (SerialPortException ex) {
 						System.out.println(ex);
@@ -311,23 +297,10 @@ public class DynamicData extends ApplicationFrame{
 		}
 	}
 
-
-
-
 	private void writeTextToFile() {
 		try {
 			FileWriter file = new FileWriter("E:\\testOscilRecorder.txt");
-
-//	    values1.add((int)55.0);
-			System.out.println("запись в файл");
-
 			strBuilderFile.append(SIGNATURE_HEADER_DATA_CHANNELS).append("\n");
-
-			System.out.println("size of values1 = " + values1.size());
-			System.out.println("size of values2 = " + values2.size());
-			System.out.println("size of values3 = " + values3.size());
-			System.out.println("size of values4 = " + values4.size());
-
 			int c = 0;
 			while ( (values1.size() - 1) != c ){
 //		System.out.println("number " + c + "  = " + 
@@ -343,17 +316,10 @@ public class DynamicData extends ApplicationFrame{
 						.append("\n");
 				c++;
 			}
-			System.out.println("values1 size = " + values1.size());
 			values1.removeAll(values1);
-			System.out.println("removed all numbers in values1 ");
-			System.out.println("valuses1 size = " + values1.size());
-
-
-			System.out.println("strBuilderFile = " + strBuilderFile);
-
 			strTmp = String.valueOf(strBuilderFile);
-			file.write(strTmp);
 
+			file.write(strTmp);
 			file.flush(); //очистить буфер -> запись файл !!!
 			file.close();
 		} catch (IOException ex) {
@@ -361,7 +327,6 @@ public class DynamicData extends ApplicationFrame{
 //            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
-
 
 
 
