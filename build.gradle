@@ -11,4 +11,7 @@ repositories {
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
+    compile 'org.scream3r:jssc:2.8.0'
+    compile 'org.jfree:jcommon:1.0.21'
+    compile 'org.jfree:jfreechart:1.0.15'
 }

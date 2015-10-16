@@ -1,10 +1,19 @@
 package app;
 
 
+import org.jfree.ui.RefineryUtilities;
+
 public class App {
 
+
+
 	public static void main(String[] args) {
-		System.out.println("logger jse side");
+		DynamicData dynamicChart = new DynamicData("Самописец");
+		dynamicChart.uartInit();
+		dynamicChart.pack();
+		RefineryUtilities.centerFrameOnScreen(dynamicChart);
+		dynamicChart.setVisible(true);
+
 	}
 
 }
