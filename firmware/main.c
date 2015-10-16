@@ -2,18 +2,38 @@
 //
 //	Description.: осциллограф-самописец
 //
-//	Version.....: 0.3.1
+//	Version.....: 0.4
 //
 //  Target(s) mcu...: mega8
 //
 //  Compiler....: gcc-4.3.3 (WinAVR 2010.01.10)
 //
-//	Comment(s)..: В назначении задержки userSamplesPerSecond == '0' 
-//					убрана задержка DELAY_15_SPS_4CH (заккоментирована).
-//					В ней нет необходимости т.к. проблема была 
-//					программе ПК. 
-//					Теперь ошибка в программе ПК испроавлена и эта 
-//					задержка не нужна!
+//	Comment(s)..: 
+//	v0.4. Переделан код отвечающий за количество семплов/с ждя каждого канала.
+//	Т.е. для каждого канала существует свой набор количества семплов/с,
+//	а в коде это программные задержки. Сначала мк принимает спец символ s,
+//	затем ожидает один из символов [a - l]. Один из этих 10-и символов
+// 	и характеризует задержку для конкретного канала.
+//    1 канал:
+//	* 60 выборок/с	->  "a"	  ->    нет задержки (макс)
+//	* 30 выборок/с	->  "b"	  ->    31 ms
+//	* 5 выборок/с	->  "c"	  ->    190 ms
+//    2 канала:
+//	* 30 выборок/с	->  "d"	  ->    нет задержки (макс)
+//	* 10 выборок/с	->  "e"	  ->    50 ms
+//	* 5 выборок/с	->  "f"	  ->    100 ms
+//   3 канала:
+//	* 20 выборок/с	->  "g"	  ->    нет задержки (макс)
+//	* 5 выборок/с	->  "h"	  ->    62 ms
+//   4 канала:
+//	* 15 выборок/с	->  "k"	  ->    нет задержки (макс)
+//	* 5 выборок/с	->  "l"	  ->    45 ms
+//	Контроллер декодирует эти символы, которые посылает программа на пк.
+//
+//
+//
+//
+//
 //
 //  Data........: 15.05.14
 //	
@@ -51,13 +71,20 @@
 #define 	ADC2_REFINT		HIGH_7 | HIGH_6 | HIGH_1
 #define 	ADC3_REFINT		HIGH_7 | HIGH_6 | HIGH_1 | HIGH_0
 #define 	ADC4_REFINT		HIGH_7 | HIGH_6 | HIGH_2	
-// #define 	ADC1_REFINT		0b11000001	//внутр ИОН=2,56В; active ADC1
-// #define 	ADC2_REFINT		0b11000010	//внутр ИОН=2,56В; active ADC2
-// #define 	ADC3_REFINT		0b11000011	//внутр ИОН=2,56В; active ADC3
 
-#define		DELAY_15_SPS_4CH		nop()
-#define		DELAY_10_SPS_4CH		_delay_ms(25)
-#define		DELAY_4_SPS_4CH			_delay_ms(57)
+#define		CH1_60_SPS_NOTDELAY		
+#define		CH1_30_SPS_31_MS		_delay_ms(31)
+#define		CH1_5_SPS_190_MS		_delay_ms(190)
+
+#define		CH2_30_SPS_NOTDELAY		
+#define		CH2_10_SPS_50_MS		_delay_ms(50)
+#define		CH2_5_SPS_100_MS		_delay_ms(100)
+
+#define		CH3_20_SPS_NOTDELAY		
+#define		CH3_5_SPS_62_MS			_delay_ms(62)
+
+#define		CH4_15_SPS_NOTDELAY		
+#define		CH4_5_SPS_45_MS			_delay_ms(45)
 
 
 void init_io(void);
@@ -92,7 +119,19 @@ int main(void){
 		sym = getCharOfUSART();
 
 		if(requestToChangeSamplePerSecond == 1){
-			if(sym == '0' || sym == '1' || sym == '2'){
+			if(sym == 'a' || 
+			sym == 'b' || 
+			sym == 'c' ||
+			
+			sym == 'd' || 
+			sym == 'e' || 			
+			sym == 'f' || 
+			
+			sym == 'g' || 
+			sym == 'h' || 
+			
+			sym == 'k' || 
+			sym == 'l'){
 				userSamplesPerSecond = sym;
 				requestToChangeSamplePerSecond = 0;
 			}
@@ -110,14 +149,30 @@ int main(void){
 		}else if(sym == '4'){
 			sendCharToUSART((unsigned char)(val4/4));
 		}
-		if(userSamplesPerSecond == '0'){
-			
-		}else if(userSamplesPerSecond == '1'){
-			DELAY_10_SPS_4CH;
-		}else if(userSamplesPerSecond == '2'){
-			DELAY_4_SPS_4CH;
+		
+		if(userSamplesPerSecond == 'a'){
+			CH1_60_SPS_NOTDELAY;
+		}else if(userSamplesPerSecond == 'b'){
+			CH1_30_SPS_31_MS;
+		}else if(userSamplesPerSecond == 'c'){
+			CH1_5_SPS_190_MS;
+		}else if(userSamplesPerSecond == 'd'){
+			CH2_30_SPS_NOTDELAY;
+		}else if(userSamplesPerSecond == 'e'){
+			CH2_10_SPS_50_MS;
+		}else if(userSamplesPerSecond == 'f'){
+			CH2_5_SPS_100_MS;
+		}else if(userSamplesPerSecond == 'g'){
+			CH3_20_SPS_NOTDELAY;
+		}else if(userSamplesPerSecond == 'h'){
+			CH3_5_SPS_62_MS;
+		}else if(userSamplesPerSecond == 'k'){
+			CH4_15_SPS_NOTDELAY;
+			// blik_led1();
+		}else if(userSamplesPerSecond == 'l'){
+			CH4_5_SPS_45_MS;
+			// blik_led2();
 		}
-		_delay_ms(45);
 	}
 }
 
