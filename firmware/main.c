@@ -2,17 +2,20 @@
 //
 //	Description.: осциллограф-самописец
 //
-//	Version.....: 0.3
+//	Version.....: 0.3.1
 //
 //  Target(s) mcu...: mega8
 //
 //  Compiler....: gcc-4.3.3 (WinAVR 2010.01.10)
 //
-//	Comment(s)..: добавлена возможность установки количества
-//					выборок (семплов) в секунду.
-//					добавлены две тестовые ф-ии на светодиодах.
+//	Comment(s)..: В назначении задержки userSamplesPerSecond == '0' 
+//					убрана задержка DELAY_15_SPS_4CH (заккоментирована).
+//					В ней нет необходимости т.к. проблема была 
+//					программе ПК. 
+//					Теперь ошибка в программе ПК испроавлена и эта 
+//					задержка не нужна!
 //
-//  Data........: 10.05.14
+//  Data........: 15.05.14
 //	
 //***************************************************************************
 
@@ -21,7 +24,7 @@
 #include <util/delay.h>
 #include <util/atomic.h>
 
-#define nop()  __asm__ __volatile__("nop")
+// #define nop()  __asm__ __volatile__("nop")
 
 #define		LED1	0b00001000
 #define		LED2	0b00010000
@@ -108,17 +111,14 @@ int main(void){
 			sendCharToUSART((unsigned char)(val4/4));
 		}
 		if(userSamplesPerSecond == '0'){
-			DELAY_15_SPS_4CH;
+			
 		}else if(userSamplesPerSecond == '1'){
 			DELAY_10_SPS_4CH;
 		}else if(userSamplesPerSecond == '2'){
 			DELAY_4_SPS_4CH;
 		}
-		
+		_delay_ms(45);
 	}
-	// while(1){
-		// blik_led1();
-	// }
 }
 
 
