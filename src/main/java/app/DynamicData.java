@@ -11,7 +11,9 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
@@ -35,7 +37,9 @@ public class DynamicData extends ApplicationFrame{
 
 	public static final  String PORT_CLOSE = "   Порт занят/закрыт ";
 	public static final  String PORT_OPEN = "   Порт открыт ";
-	public static final  String[] NUMBERS_OF_COM_PORTS = {"COM1","COM2","COM3","COM4","COM5","COM6","COM7","COM8","COM9","COM10","COM11","COM12","COM13","COM14","COM15","COM16"};
+	private static final  String[] NUMBERS_OF_COM_PORTS = {"COM1","COM2","COM3","COM4","COM5","COM6","COM7","COM8","COM9","COM10","COM11","COM12","COM13","COM14","COM15","COM16"};
+	private static final String[] SAMPLES_PER_SECOND = {"15 выборок/с", "10 выборок/с", "4 выборок/с"};
+	private static final String[] TOTAL_CHANNELS = {"1 канал", "2 канала", "3 канала", "4 канала"};
 	public static final  String START_STOP_MEASURE = "obj.DynamicData.START_STOP_MEASURE";
 	private static final String ADC_1_DATA = "ADC data 1";
 	private static final String ADC_2_DATA = "ADC data 2";
@@ -56,12 +60,15 @@ public class DynamicData extends ApplicationFrame{
 	private TimeSeries series4;
 
 	private SerialPort serialPort;
-	public  JComboBox comboBox_chooserCOMPort = new JComboBox();
 	public Label label_portState;
+	public JComboBox comboBox_chooserCOMPort = new JComboBox();
+	public JComboBox comboBox_chooserSamplesPerSecond = new JComboBox();
+	public JComboBox comboBox_chooserChaneels = new JComboBox();
 
 	private boolean startStopAction = false;
 	private boolean recordAction = false;
 
+	private int maxCh = 4;
 	public  int chaneelCounter = 1;
 	private double  dataValueMcu = 0;
 	private int[] iArr;
@@ -71,6 +78,7 @@ public class DynamicData extends ApplicationFrame{
 	ArrayList<Integer> values2 = new ArrayList<>();
 	ArrayList<Integer> values3 = new ArrayList<>();
 	ArrayList<Integer> values4 = new ArrayList<>();
+
 
 	class DemoPanel extends JPanel implements ActionListener{
 		public DemoPanel(){
@@ -137,8 +145,47 @@ public class DynamicData extends ApplicationFrame{
 				}
 			});
 
+			//раскрывающейся список - выбор задержки между измерениями
+			//т.е. количества выборок в секунду
+			comboBox_chooserSamplesPerSecond.setModel(new javax.swing.DefaultComboBoxModel(SAMPLES_PER_SECOND));
+			comboBox_chooserSamplesPerSecond.setSelectedItem(0);
+//	    comboBox_chooserSamplesPerSecond.setSelectedItem("нет задержки");
+			comboBox_chooserSamplesPerSecond.addItemListener(new ItemListener() {
+				@Override
+				public void itemStateChanged(ItemEvent e) {
+					setSamplesPerSecond((String)comboBox_chooserSamplesPerSecond.getSelectedItem());
+				}
+			});
+
+			//раскрывающейся список - выбор количества каналов
+			comboBox_chooserChaneels.setModel(new javax.swing.DefaultComboBoxModel(TOTAL_CHANNELS));
+			comboBox_chooserChaneels.setSelectedIndex(comboBox_chooserChaneels.getItemCount() - 1);
+			comboBox_chooserChaneels.addItemListener(new ItemListener() {
+				@Override
+				public void itemStateChanged(ItemEvent e) {
+					switch (comboBox_chooserChaneels.getSelectedIndex()) {
+						case 0:
+							maxCh = 1;
+							break;
+						case 1:
+							maxCh = 2;
+							break;
+						case 2:
+							maxCh = 3;
+							break;
+						case 3:
+							maxCh = 4;
+							break;
+						default:
+							System.out.println("itemStateChanged > 4");
+					}
+				}
+			});
+
 			// добавляем разные управляющие элементы на панель
 			jpanel.add(comboBox_chooserCOMPort);
+			jpanel.add(comboBox_chooserSamplesPerSecond);
+			jpanel.add(comboBox_chooserChaneels);
 			jpanel.add(label_portState);
 			jpanel.add(checkbox_record);
 			jpanel.add(btn_startStop);
@@ -171,22 +218,23 @@ public class DynamicData extends ApplicationFrame{
 		@Override
 		public void actionPerformed(ActionEvent actionevent){
 			if (actionevent.getActionCommand().equals(START_STOP_MEASURE)){
-				if (startStopAction) {			    //стоп измерений
+				//стоп измерений
+				if (startStopAction) {
 					startStopAction = false;
-//                  System.out.println("start action = false");
 					if (recordAction) writeTextToFile();
-				} else{					    //старт измерений
+					//старт измерений
+				}else{
 					try {
 						serialPort.writeString("1");
 					} catch (Exception e) {
+						System.out.println("actionevent.getActionCommand().equals(START_STOP_MEASURE)");
 					}
 					startStopAction = true;
-//                  System.out.println("start action = true");
 				}
 			}
 		}
 
-	}
+	} //------------------------------------ end class DemoModel
 
 	static Class class$org$jfree$data$time$Millisecond; /* synthetic field */
 
@@ -211,6 +259,24 @@ public class DynamicData extends ApplicationFrame{
 	}
 
 
+	public void setSamplesPerSecond(String sPsec){
+		try {
+			serialPort.writeString("s");    //спец символ - выбор тиа задержки
+			Thread.sleep(100);
+			if(sPsec.equals(SAMPLES_PER_SECOND[0])){
+				serialPort.writeString("0");	//delay = 0 ms
+			}else if(sPsec.equals(SAMPLES_PER_SECOND[1])) {
+				serialPort.writeString("1");	//delay = 25 ms
+			}else if(sPsec.equals(SAMPLES_PER_SECOND[2])){
+				serialPort.writeString("2");	//delay = 57 ms
+			}
+		} catch (SerialPortException ex) {
+			Logger.getLogger(DynamicData.class.getName()).log(Level.SEVERE, null, ex);
+		}catch (InterruptedException ex) {
+			Logger.getLogger(DynamicData.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
+
 
 	public  void uartInit(){
 		//Передаём в конструктор имя порта
@@ -221,7 +287,7 @@ public class DynamicData extends ApplicationFrame{
 			label_portState.setText(PORT_OPEN);
 			label_portState.setForeground(new Color(50, 205, 50));
 			//Выставляем параметры
-			serialPort.setParams(SerialPort.BAUDRATE_19200,
+			serialPort.setParams(SerialPort.BAUDRATE_9600,
 					SerialPort.DATABITS_8,
 					SerialPort.STOPBITS_1,
 					SerialPort.PARITY_NONE);
@@ -231,7 +297,7 @@ public class DynamicData extends ApplicationFrame{
 			//Устанавливаем ивент лисенер и маску
 			serialPort.addEventListener(new PortReader(), SerialPort.MASK_RXCHAR);
 			//Отправляем запрос устройству
-			serialPort.writeString("1"); //начинаем с канала 1
+//            serialPort.writeString("1"); //начинаем с канала 1
 		}
 		catch (SerialPortException ex) {
 			System.out.println(ex);
@@ -241,7 +307,7 @@ public class DynamicData extends ApplicationFrame{
 		}
 	}
 
-
+	int sc = 0;
 	private class PortReader implements SerialPortEventListener {
 		@Override
 		public void serialEvent(SerialPortEvent event) {
@@ -253,44 +319,85 @@ public class DynamicData extends ApplicationFrame{
 							if(chaneelCounter == 1) {
 								iArr = serialPort.readIntArray();
 								dataValueMcu = iArr[0];
-								series1.add(new Millisecond(), dataValueMcu);
+//				series1.add(new Millisecond(), dataValueMcu);
 								values1.add(iArr[0]);
-							} else if(chaneelCounter == 2){
+								//---------------------------------------------
+//				Т.к.наш осц может выдавть на 1 канал мксимум
+//				60 выборок/сек, но jFreeChart не может добавлять 
+//				данные с такой частотой, поэтому в этом коде 
+//				происходит добваление через раз. Это в итоге 
+//				позволяет искуственно уменьшить добавление
+//				данных до 30 в/с. Но завпись идет все равно
+//				со скоростью в 60 в/с.
+								if (sc == 1 && maxCh == 1) {
+									series1.add(new Millisecond(), dataValueMcu);
+									sc = 0;
+								}else{
+									sc ++;
+								}
+								if (maxCh > 1) {
+									series1.add(new Millisecond(), dataValueMcu);
+								}
+								//---------------------------------------------
+							}
+							else if(chaneelCounter == 2){
 								iArr = serialPort.readIntArray();
 								dataValueMcu = iArr[0];
 								series2.add(new Millisecond(), dataValueMcu);
 								values2.add(iArr[0]);
-							} else if(chaneelCounter == 3){
+							}
+							else if(chaneelCounter == 3){
 								iArr = serialPort.readIntArray();
 								dataValueMcu = iArr[0];
 								series3.add(new Millisecond(), dataValueMcu);
 								values3.add(iArr[0]);
-							} else if(chaneelCounter == 4){
+							}
+							else if(chaneelCounter == 4){
 								iArr = serialPort.readIntArray();
 								dataValueMcu = iArr[0];
 								series4.add(new Millisecond(), dataValueMcu);
 								values4.add(iArr[0]);
 							}
-
-							//и снова отправляем запрос 
-							//для следующего канала
+							//и снова отправляем запрос для следующего канала
 							if (chaneelCounter == 1) {
-								serialPort.writeString("2");
-								chaneelCounter = 2;
-							} else if (chaneelCounter == 2){
-								serialPort.writeString("3");
-								chaneelCounter = 3;
-							} else if (chaneelCounter == 3){
-								serialPort.writeString("4");
-								chaneelCounter = 4;
-							} else if (chaneelCounter == 4){
-								serialPort.writeString("1");
-								chaneelCounter = 1;
+								if (maxCh == 1) {
+									serialPort.writeString("1");
+									chaneelCounter = 1;
+								}
+								else if (maxCh > 1) {
+									serialPort.writeString("2");
+									chaneelCounter = 2;
+								}
+							}
+							else if (chaneelCounter == 2){
+								if (maxCh == 2) {
+									serialPort.writeString("1");
+									chaneelCounter = 1;
+								}else if (maxCh > 2) {
+									serialPort.writeString("3");
+									chaneelCounter = 3;
+								}
+							}
+							else if (chaneelCounter == 3){
+								if (maxCh == 3) {
+									serialPort.writeString("1");
+									chaneelCounter = 1;
+								}else if (maxCh > 3) {
+									serialPort.writeString("4");
+									chaneelCounter = 4;
+								}
+							}
+							else if (chaneelCounter == 4){
+								if (maxCh == 4) {
+									serialPort.writeString("1");
+									chaneelCounter = 1;
+								}
 							}
 						}
 					}
 					catch (SerialPortException ex) {
 						System.out.println(ex);
+						System.out.println("error  public void serialEvent(SerialPortEvent event)");
 					}
 				}
 			}
@@ -299,21 +406,42 @@ public class DynamicData extends ApplicationFrame{
 
 	private void writeTextToFile() {
 		try {
-			FileWriter file = new FileWriter("E:\\testOscilRecorder.txt");
+//            FileWriter file = new FileWriter("E:\\testOscilRecorder.txt");
+//            FileWriter file = new FileWriter("./testOscilRecorder.txt");
+			FileWriter file = new FileWriter("E:\\results_" + getCurrentDate() + ".csv");
 			strBuilderFile.append(SIGNATURE_HEADER_DATA_CHANNELS).append("\n");
 			int c = 0;
 			while ( (values1.size() - 1) != c ){
-//		System.out.println("number " + c + "  = " + 
-//			values1.get(c) + "\t" + 
-//			values2.get(c) + "\t" + 
-//			values3.get(c) + "\t" + 
-//			values4.get(c) + "\t");
-				strBuilderFile.append(c).append("\t")
-						.append(values1.get(c)).append("\t")
-						.append(values2.get(c)).append("\t")
-						.append(values3.get(c)).append("\t")
-						.append(values4.get(c)).append("\t")
-						.append("\n");
+				switch (maxCh) {
+					case 1:
+						strBuilderFile.append(c).append("\t")
+								.append(values1.get(c)).append("\t")
+								.append("\n");
+						break;
+					case 2:
+						strBuilderFile.append(c).append("\t")
+								.append(values1.get(c)).append("\t")
+								.append(values2.get(c)).append("\t")
+								.append("\n");
+						break;
+					case 3:
+						strBuilderFile.append(c).append("\t")
+								.append(values1.get(c)).append("\t")
+								.append(values2.get(c)).append("\t")
+								.append(values3.get(c)).append("\t")
+								.append("\n");
+						break;
+					case 4:
+						strBuilderFile.append(c).append("\t")
+								.append(values1.get(c)).append("\t")
+								.append(values2.get(c)).append("\t")
+								.append(values3.get(c)).append("\t")
+								.append(values4.get(c)).append("\t")
+								.append("\n");
+						break;
+					default:
+						System.out.println("in save method: channels > 4");
+				}
 				c++;
 			}
 			values1.removeAll(values1);
@@ -324,8 +452,14 @@ public class DynamicData extends ApplicationFrame{
 			file.close();
 		} catch (IOException ex) {
 			System.out.println("ошибка в методе writeTextToFile !");
-//            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(DynamicData.class.getName()).log(Level.SEVERE, null, ex);
 		}
+	}
+
+	public String getCurrentDate(){
+		Date date = new Date();
+		SimpleDateFormat formatDate = new SimpleDateFormat("dd_MM_YYYY__HH_mm_ss");
+		return formatDate.format(date);
 	}
 
 
