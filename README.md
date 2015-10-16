@@ -1,6 +1,6 @@
-# logger jse side project
+# logger jse side project  
 
-For build this project:
-jdk7 for dev  
+This project build with:  
+jdk7 for compile  
 gradle 2.4  
 jre 8 for gradle  
