@@ -1,5 +1,7 @@
 package app;
 
+import org.jfree.chart.renderer.xy.HighLowRenderer;
+import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.ui.ApplicationFrame;
 
 import java.awt.*;
@@ -9,9 +11,8 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.FileWriter;
 import java.io.IOException;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JPanel;
+import javax.swing.*;
+
 import jssc.SerialPort;
 import jssc.SerialPortEvent;
 import jssc.SerialPortEventListener;
@@ -29,32 +30,117 @@ import org.jfree.data.xy.XYDataset;
 
 public class DynamicData extends ApplicationFrame{
 
-	public static  TimeSeries series;
-	private static  SerialPort serialPort;
+	public TimeSeries series;
+	public TimeSeries series2;
+	private SerialPort serialPort;
 
-	public static double  dataValueMcu = 50D;
-	public static char[] chArr;
-	public static byte[] bArr;
-	public static int[] iArr;
+	public  double  dataValueMcu = 50D;
+	public  char[] chArr;
+	public  byte[] bArr;
+	public  int[] iArr;
 
-	public static  boolean startStopAction = false;
-	public static  boolean recordAction = false;
+	public   boolean startStopAction = false;
+	public   boolean recordAction = false;
 
-	public static int counterNumber = 1;
+	public  int counterNumber = 1;
 
-	public static int[] arrNumbers = new int[10000]; //2700000 знач для 3ч при 250 изм/с
-	public static int[] arrValues = new int[10000];
+	public  int[] arrNumbers = new int[10000]; //2700000 знач для 3ч при 250 изм/с
+	public  int[] arrValues = new int[10000];
 
-	public static Label labelPortState;
+	public  Label labelPortState;
 	public static String portClose = "Порт занят/закрыт";
 	public static String portOpen = "Порт открыт";
 
+	public static String[] numbersCOMPorts = {"COM1","COM2","COM3","COM4","COM5","COM6","COM7","COM8","COM9","COM10","COM11","COM12","COM13","COM14","COM15","COM16"};
 
-	static class DemoPanel extends JPanel implements ActionListener{
+	String strTmp = "NUMBER" + "\t" + "VALUE" + "\n";
 
-		private JFreeChart createChart(XYDataset xydataset){
+	public JComboBox comboBox_chooserCOMPort = new JComboBox();
+
+	public  int chaneelCounter = 1;
+
+
+
+
+
+	class DemoPanel extends JPanel implements ActionListener{
+
+		public DemoPanel(){
+			super(new BorderLayout());
+			series = new TimeSeries("ADC data 1", DynamicData.class$org$jfree$data$time$Millisecond != null ? DynamicData.class$org$jfree$data$time$Millisecond : (DynamicData.class$org$jfree$data$time$Millisecond = DynamicData.class$("org.jfree.data.time.Millisecond")));
+			series2 = new TimeSeries("ADC data 2", DynamicData.class$org$jfree$data$time$Millisecond != null ? DynamicData.class$org$jfree$data$time$Millisecond : (DynamicData.class$org$jfree$data$time$Millisecond = DynamicData.class$("org.jfree.data.time.Millisecond")));
+
+			TimeSeriesCollection timeseriescollection = new TimeSeriesCollection(series);
+			TimeSeriesCollection timeseriescollection2 = new TimeSeriesCollection(series2);
+
+			ChartPanel chartpanel = new ChartPanel(createChart(timeseriescollection, timeseriescollection2));
+			chartpanel.setPreferredSize(new Dimension(900, 500));
+
+			// добавляем панель
+			JPanel jpanel = new JPanel();
+			jpanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+
+			// создаем  управляющие элементы ...
+			//кнопка
+			JButton btn_start_stop = new JButton("Старт/стоп");
+			btn_start_stop.setActionCommand("START_STOP_MEASURE");
+			btn_start_stop.addActionListener(this);
+
+			//переключатель
+			Checkbox checkbox_record = new Checkbox("Запись ");
+			checkbox_record.setFont(new Font("tahoma", Font.BOLD, 18));
+			checkbox_record.setState(recordAction);
+			checkbox_record.addItemListener(new ItemListener() {
+				@Override
+				public void itemStateChanged(ItemEvent e) {
+					if (recordAction) {
+						recordAction = false;
+					} else{
+						recordAction = true;
+					}
+//                        System.out.println("chek box !");
+//                        System.out.println("record action = " + recordAction);
+				}
+			});
+
+			//надпись для вывода текста
+			labelPortState = new Label(portClose);
+			labelPortState.setFont(new Font("tahoma", Font.BOLD, 18));
+
+			//раскрывающейся список
+//		JComboBox comboBox_chooserCOMPort = new JComboBox();
+//                comboBox_chooserCOMPort.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+			comboBox_chooserCOMPort.setModel(new javax.swing.DefaultComboBoxModel(numbersCOMPorts));
+			comboBox_chooserCOMPort.setSelectedIndex(6);
+//		comboBox_chooserCOMPort.addItemListener(new ItemListener() {
+//		    @Override
+//		    public void itemStateChanged(ItemEvent e) {
+//			System.out.println("addItemListener - ItemListener - itemStateChanged");
+//			System.out.println("chooser com port = " + );
+//		    }
+//		});
+
+
+			// добавляем разные управляющие элементы на панель
+			jpanel.add(comboBox_chooserCOMPort);
+			jpanel.add(labelPortState);
+			jpanel.add(checkbox_record);
+			jpanel.add(btn_start_stop);
+
+			add(chartpanel);
+			add(jpanel, "South");
+		}
+
+
+		private JFreeChart createChart(XYDataset xydataset, XYDataset xydataset2){
 			JFreeChart jfreechart = ChartFactory.createTimeSeriesChart("Осциллограф - самописец", "Time", "Value", xydataset, true, true, false);
+
 			XYPlot xyplot = (XYPlot)jfreechart.getPlot();
+			xyplot.setDataset(2, xydataset2);
+
+			xyplot.setRenderer(2, new HighLowRenderer());
+			XYItemRenderer renderer = xyplot.getRenderer();
+
 			ValueAxis valueaxis = xyplot.getDomainAxis();
 			valueaxis.setAutoRange(true);
 			valueaxis.setFixedAutoRange(60000D);
@@ -78,58 +164,19 @@ public class DynamicData extends ApplicationFrame{
 		}
 
 
-		public DemoPanel(){
-			super(new BorderLayout());
-			series = new TimeSeries("ADC data", DynamicData.class$org$jfree$data$time$Millisecond != null ? DynamicData.class$org$jfree$data$time$Millisecond : (DynamicData.class$org$jfree$data$time$Millisecond = DynamicData.class$("org.jfree.data.time.Millisecond")));
-			TimeSeriesCollection timeseriescollection = new TimeSeriesCollection(series);
-			ChartPanel chartpanel = new ChartPanel(createChart(timeseriescollection));
-			chartpanel.setPreferredSize(new Dimension(900, 500));
 
-			JPanel jpanel = new JPanel();
-			jpanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-
-			JButton btn_start_stop = new JButton("Start/stop");
-			btn_start_stop.setActionCommand("START_STOP_MEASURE");
-			btn_start_stop.addActionListener(this);
-
-			Checkbox checkbox_record = new Checkbox("Record ");
-			checkbox_record.setFont(new Font("tahoma", Font.BOLD, 18));
-			checkbox_record.setState(recordAction);
-			checkbox_record.addItemListener(new ItemListener() {
-				@Override
-				public void itemStateChanged(ItemEvent e) {
-					if (recordAction) {
-						recordAction = false;
-					} else{
-						recordAction = true;
-					}
-//                        System.out.println("chek box !");
-//                        System.out.println("record action = " + recordAction);
-				}
-			});
-
-			labelPortState = new Label(portClose);
-			labelPortState.setFont(new Font("tahoma", Font.BOLD, 18));
-
-			jpanel.add(labelPortState);
-			jpanel.add(checkbox_record);
-			jpanel.add(btn_start_stop);
-
-			add(chartpanel);
-			add(jpanel, "South");
-		}
 	}
 
 
 	static Class class$org$jfree$data$time$Millisecond; /* synthetic field */
 
-	public DynamicData(String s){
+	public DynamicData (String s){
 		super(s);
 		DemoPanel demopanel = new DemoPanel();
 		setContentPane(demopanel);
 	}
 
-	public static JPanel createDemoPanel(){
+	public JPanel createDemoPanel(){
 		return new DemoPanel();
 	}
 
@@ -147,26 +194,27 @@ public class DynamicData extends ApplicationFrame{
 
 
 
-	public static void uartInit(){
+	public  void uartInit(){
 		//Передаём в конструктор имя порта
-		serialPort = new SerialPort("COM4");
+//        serialPort = new SerialPort("COM7");
+		serialPort = new SerialPort(comboBox_chooserCOMPort.getSelectedItem().toString());
 		try {
 			//Открываем порт
 			serialPort.openPort();
 			labelPortState.setText(portOpen);
 			labelPortState.setForeground(new Color(50, 205, 50));
 			//Выставляем параметры
-			serialPort.setParams(SerialPort.BAUDRATE_9600,
+			serialPort.setParams(SerialPort.BAUDRATE_1200,
 					SerialPort.DATABITS_8,
 					SerialPort.STOPBITS_1,
 					SerialPort.PARITY_NONE);
-			//Включаем аппаратное управление потоком
-			serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN |
-					SerialPort.FLOWCONTROL_RTSCTS_OUT);
+			//Включаем аппаратное управление потоком (для FT232 нжуно отключать)
+//            serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN | 
+//                                          SerialPort.FLOWCONTROL_RTSCTS_OUT);
 			//Устанавливаем ивент лисенер и маску
 			serialPort.addEventListener(new PortReader(), SerialPort.MASK_RXCHAR);
 			//Отправляем запрос устройству
-			serialPort.writeString("q");
+			serialPort.writeString("1");
 
 		}
 		catch (SerialPortException ex) {
@@ -178,7 +226,7 @@ public class DynamicData extends ApplicationFrame{
 	}
 
 
-	private static class PortReader implements SerialPortEventListener {
+	private class PortReader implements SerialPortEventListener {
 
 		@Override
 		public void serialEvent(SerialPortEvent event) {
@@ -188,16 +236,37 @@ public class DynamicData extends ApplicationFrame{
 					try {
 						if (startStopAction) {
 
-							iArr = serialPort.readIntArray();
-							dataValueMcu = iArr[0];
-							series.add(new Millisecond(), dataValueMcu);
+//                            iArr = serialPort.readIntArray();
+//                            dataValueMcu = iArr[0];
+//                            series.add(new Millisecond(), dataValueMcu);
+//			    series2.add(new Millisecond(), dataValueMcu + 10.0);
+//                            
+//                            //сохраняем значения для файла
+//                            arrNumbers[counterNumber] = counterNumber;
+//                            arrValues[counterNumber] = (int)dataValueMcu;
+//                            counterNumber ++;
 
-							//сохраняем значения для файла
-							arrNumbers[counterNumber] = counterNumber;
-							arrValues[counterNumber] = (int)dataValueMcu;
-							counterNumber ++;
+							if (chaneelCounter == 1) {
+								iArr = serialPort.readIntArray();
+								dataValueMcu = iArr[0];
+								series.add(new Millisecond(), dataValueMcu);
+								chaneelCounter = 2;
+							} else {
+								iArr = serialPort.readIntArray();
+								dataValueMcu = iArr[0];
+								series2.add(new Millisecond(), dataValueMcu);
+								chaneelCounter = 1;
+							}
 						}
-						serialPort.writeString("z"); //И снова отправляем запрос
+						//и снова отправляем запрос
+						// serialPort.writeString("z");
+						if (chaneelCounter == 1) {
+							serialPort.writeString("1");
+//			    chaneelCounter = 2;
+						}else{
+							serialPort.writeString("2");
+//			    chaneelCounter = 1;
+						}
 					}
 					catch (SerialPortException ex) {
 						System.out.println(ex);
@@ -208,9 +277,9 @@ public class DynamicData extends ApplicationFrame{
 	}
 
 
-	static String strTmp = "NUMBER" + "\t" + "VALUE" + "\n";
 
-	private static void writeTextToFile() {
+
+	private void writeTextToFile() {
 //        System.out.println("запись текст данных в файл");
 		try {
 			FileWriter file = new FileWriter("E:\\testOscilRecorder.txt");
@@ -230,5 +299,7 @@ public class DynamicData extends ApplicationFrame{
 //            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
+
+
 
 }
