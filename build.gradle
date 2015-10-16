@@ -15,3 +15,8 @@ dependencies {
     compile 'org.jfree:jcommon:1.0.21'
     compile 'org.jfree:jfreechart:1.0.15'
 }
+
+task(runLogger, dependsOn: 'classes', type: JavaExec) {
+    main = 'app.App'
+    classpath = sourceSets.main.runtimeClasspath
+}
