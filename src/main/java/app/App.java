@@ -10,7 +10,8 @@ public class App {
 	public static void main(String[] args) {
 		DynamicData dynamicChart = new DynamicData("Самописец");
 		dynamicChart.uartInit();
-		dynamicChart.setSamplesPerSecond("15 выборок/с");
+		dynamicChart.setMCUSamplesPerSecond("15 выборок/с");
+		dynamicChart.setChoosesValuesSamplesPerSecond(4);
 		dynamicChart.pack();
 		RefineryUtilities.centerFrameOnScreen(dynamicChart);
 		dynamicChart.setVisible(true);
