@@ -51,7 +51,6 @@ public class DynamicData extends ApplicationFrame{
 	private static final String AXIS_Y_NAME = "Значение";
 	private static final double MIN_AXIS_VALUE = 0D;
 	private static final double MAX_AXIS_VALUE = 255D;
-	private static final String SIGNATURE_HEADER_DATA_CHANNELS = "NUMBER" + "\t" + "CH1"+ "\t" + "CH2"+ "\t" + "CH3"+ "\t" + "CH4";
 
 	//    private static final String[] SAMPLES_PER_SECOND = {"60 выборок/с", "30 выборок/с", "20 выборок/с", "15 выборок/с", "10 выборок/с", "5 выборок/с"};
 	private static final String[] SAMPLES_PER_SECOND = {"60 выборок/с",
@@ -263,7 +262,7 @@ public class DynamicData extends ApplicationFrame{
 				//стоп измерений
 				if (startStopAction) {
 					startStopAction = false;
-					if (recordAction) writeTextToFile();
+					if (recordAction) new Recorder().writeResultsToFile(4, values1, values2, values3, values4);
 					//старт измерений
 				}else{
 					try {
@@ -492,63 +491,7 @@ public class DynamicData extends ApplicationFrame{
 		}
 	}
 
-	private void writeTextToFile() {
-		try {
-//            FileWriter file = new FileWriter("E:\\testOscilRecorder.txt");
-			FileWriter file = new FileWriter("./results_" + getCurrentDate() + ".csv");
-//            FileWriter file = new FileWriter("E:\\results_" + getCurrentDate() + ".csv");
-			strBuilderFile.append(SIGNATURE_HEADER_DATA_CHANNELS).append("\n");
-			int c = 0;
-			while ( (values1.size() - 1) != c ){
-				switch (maxCh) {
-					case 1:
-						strBuilderFile.append(c).append("\t")
-								.append(values1.get(c)).append("\t")
-								.append("\n");
-						break;
-					case 2:
-						strBuilderFile.append(c).append("\t")
-								.append(values1.get(c)).append("\t")
-								.append(values2.get(c)).append("\t")
-								.append("\n");
-						break;
-					case 3:
-						strBuilderFile.append(c).append("\t")
-								.append(values1.get(c)).append("\t")
-								.append(values2.get(c)).append("\t")
-								.append(values3.get(c)).append("\t")
-								.append("\n");
-						break;
-					case 4:
-						strBuilderFile.append(c).append("\t")
-								.append(values1.get(c)).append("\t")
-								.append(values2.get(c)).append("\t")
-								.append(values3.get(c)).append("\t")
-								.append(values4.get(c)).append("\t")
-								.append("\n");
-						break;
-					default:
-						System.out.println("in save method: channels > 4");
-				}
-				c++;
-			}
-			values1.removeAll(values1);
-			strTmp = String.valueOf(strBuilderFile);
 
-			file.write(strTmp);
-			file.flush(); //очистить буфер -> запись файл !!!
-			file.close();
-		} catch (IOException ex) {
-			System.out.println("ошибка в методе writeTextToFile !");
-			Logger.getLogger(DynamicData.class.getName()).log(Level.SEVERE, null, ex);
-		}
-	}
-
-	public String getCurrentDate(){
-		Date date = new Date();
-		SimpleDateFormat formatDate = new SimpleDateFormat("dd_MM_YYYY__HH_mm_ss");
-		return formatDate.format(date);
-	}
 
 
 }
