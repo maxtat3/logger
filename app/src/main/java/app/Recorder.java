@@ -3,6 +3,7 @@ package app;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -36,7 +37,9 @@ public class Recorder {
      * @param ch1 channel 1 results
      * @param allChannels how many channels have been involved in the measure process
      */
-    public void writeResultsToFile(int allChannels, List<Integer> ch1, List<Integer> ch2, List<Integer> ch3, List<Integer> ch4) {
+    public void writeResultsToFile(int allChannels, List<Integer> ch1, List<Integer> ch2,
+                                   List<Integer> ch3, List<Integer> ch4) throws LargeChannelsRecordException {
+        if (allChannels > 4) throw new LargeChannelsRecordException();
         try {
             FileWriter file = new FileWriter("./" + PREFIX_FILE + getCurrentDate() + CSV_EXT_FILE);
             buffer.append(HEADER_FILE).append(LFCR);

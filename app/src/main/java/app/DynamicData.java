@@ -262,7 +262,12 @@ public class DynamicData extends ApplicationFrame{
 				//стоп измерений
 				if (startStopAction) {
 					startStopAction = false;
-					if (recordAction) new Recorder().writeResultsToFile(4, values1, values2, values3, values4);
+					if (recordAction) try {
+						// 4 - may be dynamic change when user selected channel number
+						new Recorder().writeResultsToFile(4, values1, values2, values3, values4);
+					} catch (LargeChannelsRecordException e) {
+						e.printStackTrace();
+					}
 					//старт измерений
 				}else{
 					try {
