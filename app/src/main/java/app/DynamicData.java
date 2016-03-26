@@ -269,7 +269,7 @@ public class DynamicData extends ApplicationFrame{
                         try {
 						// 4 - may be dynamic change when user selected channel number
 						new Recorder().writeResultsToFile(
-                                4,
+                                maxCh,
                                 result.getChannel1AllValues(),
                                 result.getChannel2AllValues(),
                                 result.getChannel3AllValues(),
