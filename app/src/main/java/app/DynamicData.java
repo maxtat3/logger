@@ -94,16 +94,14 @@ public class DynamicData extends ApplicationFrame{
 	private boolean startStopAction = false;
 	private boolean recordAction = false;
 
-	private int maxCh = 4;
-	public  int chaneelCounter = 1;
-	private double  dataValueMcu = 0;
-	private int[] iArr;
-	StringBuilder strBuilderFile = new StringBuilder();
+    private int maxCh = 4;
+    public  int chaneelCounter = 1;
+    private double  dataValueMcu = 0;
+    private int[] iArr;
+    StringBuilder strBuilderFile = new StringBuilder();
+
 	String strTmp;
-	ArrayList<Integer> values1 = new ArrayList<>();
-	ArrayList<Integer> values2 = new ArrayList<>();
-	ArrayList<Integer> values3 = new ArrayList<>();
-	ArrayList<Integer> values4 = new ArrayList<>();
+    private Result result = new Result();
 
 
 	class DemoPanel extends JPanel implements ActionListener{
@@ -262,9 +260,16 @@ public class DynamicData extends ApplicationFrame{
 				//стоп измерений
 				if (startStopAction) {
 					startStopAction = false;
-					if (recordAction) try {
+					if (recordAction)
+                        try {
 						// 4 - may be dynamic change when user selected channel number
-						new Recorder().writeResultsToFile(4, values1, values2, values3, values4);
+						new Recorder().writeResultsToFile(
+                                4,
+                                result.getChannel1AllValues(),
+                                result.getChannel2AllValues(),
+                                result.getChannel3AllValues(),
+                                result.getChannel4AllValues()
+                        );
 					} catch (LargeChannelsRecordException e) {
 						e.printStackTrace();
 					}
@@ -412,7 +417,7 @@ public class DynamicData extends ApplicationFrame{
 								iArr = serialPort.readIntArray();
 								dataValueMcu = iArr[0];
 //				series1.add(new Millisecond(), dataValueMcu);
-								values1.add(iArr[0]);
+								result.addChannel1Val(iArr[0]);
 								//---------------------------------------------
 //				Т.к.наш осц может выдавть на 1 канал мксимум
 //				60 выборок/сек, но jFreeChart не может добавлять 
@@ -436,19 +441,19 @@ public class DynamicData extends ApplicationFrame{
 								iArr = serialPort.readIntArray();
 								dataValueMcu = iArr[0];
 								series2.add(new Millisecond(), dataValueMcu);
-								values2.add(iArr[0]);
+								result.addChannel2Val(iArr[0]);
 							}
 							else if(chaneelCounter == 3){
 								iArr = serialPort.readIntArray();
 								dataValueMcu = iArr[0];
 								series3.add(new Millisecond(), dataValueMcu);
-								values3.add(iArr[0]);
+								result.addChannel3Val(iArr[0]);
 							}
 							else if(chaneelCounter == 4){
 								iArr = serialPort.readIntArray();
 								dataValueMcu = iArr[0];
 								series4.add(new Millisecond(), dataValueMcu);
-								values4.add(iArr[0]);
+								result.addChannel4Val(iArr[0]);
 							}
 							//и снова отправляем запрос для следующего канала
 							if (chaneelCounter == 1) {

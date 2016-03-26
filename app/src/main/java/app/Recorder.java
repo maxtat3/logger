@@ -75,7 +75,7 @@ public class Recorder {
                 }
                 line++;
             }
-            ch1.removeAll(ch1);
+            ch1.removeAll(ch1); //todo - may be replace to clear method, because this faster !
 //            ch2.removeAll(ch2); // may be used this ?
 //            ch3.removeAll(ch3);
 //            ch4.removeAll(ch4);
