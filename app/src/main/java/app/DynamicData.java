@@ -37,7 +37,12 @@ public class DynamicData extends ApplicationFrame{
 
 	public static final  String PORT_CLOSE = "   Порт занят/закрыт ";
 	public static final  String PORT_OPEN = "   Порт открыт ";
-	private static final  String[] NUMBERS_OF_COM_PORTS = {"COM1","COM2","COM3","COM4","COM5","COM6","COM7","COM8","COM9","COM10","COM11","COM12","COM13","COM14","COM15","COM16"};
+	private static final  String[] NUMBERS_OF_COM_PORTS = {
+            "COM1","COM2","COM3","COM4","COM5","COM6","COM7","COM8",
+            "COM9","COM10","COM11","COM12","COM13","COM14","COM15","COM16",
+            "/dev/ttyUSB0", "/dev/ttyUSB1", "/dev/ttyUSB2", "/dev/ttyUSB3",
+            "/dev/ttyACM0", "/dev/ttyACM1", "/dev/ttyACM2", "/dev/ttyACM3",
+    };
 	private static final String[] TOTAL_CHANNELS = {"1 канал", "2 канала", "3 канала", "4 канала"};
 	public static final  String START_STOP_MEASURE = "obj.DynamicData.START_STOP_MEASURE";
 	private static final String ADC_1_DATA = "ADC data 1";
