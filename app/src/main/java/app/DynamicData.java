@@ -1,43 +1,33 @@
 package app;
 
-import org.jfree.chart.renderer.xy.HighLowRenderer;
-import org.jfree.chart.renderer.xy.XYItemRenderer;
-import org.jfree.ui.ApplicationFrame;
-
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.*;
-
-import jssc.SerialPort;
-import jssc.SerialPortEvent;
-import jssc.SerialPortEventListener;
-import jssc.SerialPortException;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.HighLowRenderer;
+import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.data.time.Millisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
+import org.jfree.ui.ApplicationFrame;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
-public class DynamicData extends ApplicationFrame{
+public class DynamicData extends ApplicationFrame implements ViewCallback{
 
 	public static final  String PORT_CLOSE = "   Порт занят/закрыт ";
 	public static final  String PORT_OPEN = "   Порт открыт ";
-	private static final  String[] NUMBERS_OF_COM_PORTS = {
+	public static final  String[] NUMBERS_OF_COM_PORTS = {
             "COM1","COM2","COM3","COM4","COM5","COM6","COM7","COM8",
             "COM9","COM10","COM11","COM12","COM13","COM14","COM15","COM16",
             "/dev/ttyUSB0", "/dev/ttyUSB1", "/dev/ttyUSB2", "/dev/ttyUSB3",
@@ -58,58 +48,73 @@ public class DynamicData extends ApplicationFrame{
 	private static final double MAX_AXIS_VALUE = 255D;
 
 	//    private static final String[] SAMPLES_PER_SECOND = {"60 выборок/с", "30 выборок/с", "20 выборок/с", "15 выборок/с", "10 выборок/с", "5 выборок/с"};
-	private static final String[] SAMPLES_PER_SECOND = {"60 выборок/с",
-			"30 выборок/с", //1[]
-			"5 выборок/с", //2[]
 
-			"30 выборок/с ", //1[*]
-			"10 выборок/с",
-			"5 выборок/с ", //2[*]
-
-			"20 выборок/с",
-			"5 выборок/с  ", //2[**]
-
-			"15 выборок/с",
-			"5 выборок/с   "}; //2[***]
-	private static final String[] CH1_60_SPS_NOTDELAY = {SAMPLES_PER_SECOND[0], "a"};
-	private static final String[] CH1_30_SPS_31_MS = {SAMPLES_PER_SECOND[1], "b"};
-	private static final String[] CH1_5_SPS_190_MS = {SAMPLES_PER_SECOND[2], "c"};
-
-	private static final String[] CH2_30_SPS_NOTDELAY = {SAMPLES_PER_SECOND[3], "d"};
-	private static final String[] CH2_10_SPS_50_MS = {SAMPLES_PER_SECOND[4], "e"};
-	private static final String[] CH2_5_SPS_100_MS = {SAMPLES_PER_SECOND[5], "f"};
-
-	private static final String[] CH3_20_SPS_NOTDELAY = {SAMPLES_PER_SECOND[6], "g"};
-	private static final String[] CH3_5_SPS_62_MS = {SAMPLES_PER_SECOND[7], "h"};
-
-	private static final String[] CH4_15_SPS_NOTDELAY = {SAMPLES_PER_SECOND[8], "k"};
-	private static final String[] CH4_5_SPS_45_MS = {SAMPLES_PER_SECOND[9], "l"};
 
 	private TimeSeries series1;
 	private TimeSeries series2;
 	private TimeSeries series3;
 	private TimeSeries series4;
 
-	private SerialPort serialPort;
+
 	public Label label_portState;
 	public JComboBox comboBox_chooserCOMPort = new JComboBox();
 	public JComboBox comboBox_chooserSamplesPerSecond = new JComboBox();
 	public JComboBox comboBox_chooserChaneels = new JComboBox();
 
-	private boolean startStopAction = false;
-	private boolean recordAction = false;
-
-    private int maxCh = 4;
-    public  int chaneelCounter = 1;
-    private double  dataValueMcu = 0;
-    private int[] iArr;
-    StringBuilder strBuilderFile = new StringBuilder();
-
-	String strTmp;
-    private Result result = new Result();
 
 
-	class DemoPanel extends JPanel implements ActionListener{
+
+
+
+
+
+
+    static Class class$org$jfree$data$time$Millisecond; /* synthetic field */
+
+    private Controller controller;
+
+
+
+    public DynamicData (String s){
+        super(s);
+        DemoPanel demopanel = new DemoPanel();
+        setContentPane(demopanel);
+        controller = new Controller(this);
+        //init USART
+        controller.turnOnUSART(NUMBERS_OF_COM_PORTS[16]);
+    }
+
+    static Class class$(String s){
+        Class clazz = null;
+        try {
+            clazz= Class.forName(s);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return clazz;
+    }
+
+    @Override
+    public void setPortState(USART.PortStates portStates) {
+        if (portStates == USART.PortStates.OPEN) {
+            label_portState.setText(PORT_OPEN);
+            label_portState.setForeground(new Color(50, 205, 50));
+
+        } else if (portStates == USART.PortStates.CLOSE) {
+            System.out.println("port close");
+            label_portState.setText(PORT_CLOSE);
+            label_portState.setForeground(Color.red);
+        }
+    }
+
+    @Override
+    public void addCh1Data(int adcData) {
+        series1.add(new Millisecond(), adcData);
+    }
+
+//todo добавить bool isOpenPort. Эта переменная может применятся для блокировки UI если нет подключения к порту
+
+    class DemoPanel extends JPanel implements ActionListener{
 		public DemoPanel(){
 			super(new BorderLayout());
 			series1 = new TimeSeries(ADC_1_DATA, DynamicData.class$org$jfree$data$time$Millisecond != null ? DynamicData.class$org$jfree$data$time$Millisecond : (DynamicData.class$org$jfree$data$time$Millisecond = DynamicData.class$("org.jfree.data.time.Millisecond")));
@@ -138,15 +143,11 @@ public class DynamicData extends ApplicationFrame{
 			//переключатель - запись?
 			Checkbox checkbox_record = new Checkbox(CHECKBOX_RECORD);
 			checkbox_record.setFont(new Font("tahoma", Font.BOLD, 18));
-			checkbox_record.setState(recordAction);
+			checkbox_record.setState(false); // record not set by default
 			checkbox_record.addItemListener(new ItemListener() {
 				@Override
 				public void itemStateChanged(ItemEvent e) {
-					if (recordAction) {
-						recordAction = false;
-					} else{
-						recordAction = true;
-					}
+
 				}
 			});
 
@@ -160,15 +161,12 @@ public class DynamicData extends ApplicationFrame{
 			comboBox_chooserCOMPort.addItemListener(new ItemListener() {
 				@Override
 				public void itemStateChanged(ItemEvent e) {
-					if(serialPort.isOpened()){
-						try {
-							serialPort.closePort();
-						} catch (SerialPortException ex) {
-							Logger.getLogger(DynamicData.class.getName()).log(Level.SEVERE, null, ex);
-						}
-						uartInit();
+					if(controller.isOpenUSARTPort()){
+                        controller.closeUSARTPort();
+                        // todo - may be set delay
+						controller.turnOnUSART(comboBox_chooserCOMPort.getSelectedItem().toString());
 					}else{
-						uartInit();
+						controller.turnOnUSART(comboBox_chooserCOMPort.getSelectedItem().toString());
 					}
 				}
 			});
@@ -181,31 +179,9 @@ public class DynamicData extends ApplicationFrame{
 			comboBox_chooserChaneels.addItemListener(new ItemListener() {
 				@Override
 				public void itemStateChanged(ItemEvent e) {
-					switch (comboBox_chooserChaneels.getSelectedIndex()) {
-						case 0:
-							maxCh = 1;
-							setChoosesValuesSamplesPerSecond(maxCh);
-							setMCUSamplesPerSecond((String)comboBox_chooserSamplesPerSecond.getSelectedItem());
-							break;
-						case 1:
-							maxCh = 2;
-							setChoosesValuesSamplesPerSecond(maxCh);
-							setMCUSamplesPerSecond((String)comboBox_chooserSamplesPerSecond.getSelectedItem());
-							break;
-						case 2:
-							maxCh = 3;
-							setChoosesValuesSamplesPerSecond(maxCh);
-							setMCUSamplesPerSecond((String)comboBox_chooserSamplesPerSecond.getSelectedItem());
-							break;
-						case 3:
-							maxCh = 4;
-							setChoosesValuesSamplesPerSecond(maxCh);
-							setMCUSamplesPerSecond((String)comboBox_chooserSamplesPerSecond.getSelectedItem());
-							break;
-						default:
-							System.out.println("itemStateChanged > 4");
-					}
-				}
+                    String[] availableSPS = controller.setChannelsNum(comboBox_chooserChaneels.getSelectedIndex());
+                    comboBox_chooserSamplesPerSecond.setModel(new javax.swing.DefaultComboBoxModel(availableSPS));
+                }
 			});
 
 			//----------------------------------------------------------------
@@ -213,17 +189,19 @@ public class DynamicData extends ApplicationFrame{
 			//т.е. количества выборок в секунду
 			//----------------------------------------------------------------
 //	    comboBox_chooserSamplesPerSecond.setModel(new javax.swing.DefaultComboBoxModel(SAMPLES_PER_SECOND));
-			setChoosesValuesSamplesPerSecond(comboBox_chooserChaneels.getSelectedIndex());
+//			setChoosesValuesSamplesPerSecond(comboBox_chooserChaneels.getSelectedIndex());
 			comboBox_chooserSamplesPerSecond.setSelectedItem(0);
 			comboBox_chooserSamplesPerSecond.addItemListener(new ItemListener() {
 				@Override
 				public void itemStateChanged(ItemEvent e) {
-					setMCUSamplesPerSecond((String)comboBox_chooserSamplesPerSecond.getSelectedItem());
-//		    System.out.println("sel item =      " + (String)comboBox_chooserSamplesPerSecond.getSelectedItem());
-//		    System.out.println("-----------");
+					controller.setMCUSamplesPerSecond((String)comboBox_chooserSamplesPerSecond.getSelectedItem());
+//        		    System.out.println("sel item =      " + (String)comboBox_chooserSamplesPerSecond.getSelectedItem());
+//        		    System.out.println("-----------");
 				}
 			});
 
+            comboBox_chooserChaneels.setSelectedItem(0);
+            comboBox_chooserSamplesPerSecond.setSelectedItem(0);
 
 
 			// добавляем разные управляющие элементы на панель
@@ -262,249 +240,35 @@ public class DynamicData extends ApplicationFrame{
 		@Override
 		public void actionPerformed(ActionEvent actionevent){
 			if (actionevent.getActionCommand().equals(START_STOP_MEASURE)){
-				//стоп измерений
-				if (startStopAction) {
-					startStopAction = false;
-					if (recordAction)
-                        try {
-						// 4 - may be dynamic change when user selected channel number
-						new Recorder().writeResultsToFile(
-                                maxCh,
-                                result.getChannel1AllValues(),
-                                result.getChannel2AllValues(),
-                                result.getChannel3AllValues(),
-                                result.getChannel4AllValues()
-                        );
-					} catch (LargeChannelsRecordException e) {
-						e.printStackTrace();
-					}
-					//старт измерений
-				}else{
-					try {
-						serialPort.writeString("1");
-					} catch (Exception e) {
-						System.out.println("actionevent.getActionCommand().equals(START_STOP_MEASURE)");
-					}
-					startStopAction = true;
-				}
+                controller.doStartStopMsr();
 			}
 		}
 
 	} //------------------------------------ end class DemoModel
 
-	static Class class$org$jfree$data$time$Millisecond; /* synthetic field */
-
-	public DynamicData (String s){
-		super(s);
-		DemoPanel demopanel = new DemoPanel();
-		setContentPane(demopanel);
-	}
-
-	public JPanel createDemoPanel(){
-		return new DemoPanel();
-	}
-
-	static Class class$(String s){
-		Class clazz = null;
-		try {
-			clazz= Class.forName(s);
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-		return clazz;
-	}
 
 
-	public void setMCUSamplesPerSecond(String chooseValSps){
-		try {
-			serialPort.writeString("s");    //спец символ - установка mcu в режим выбора типа задержки
-			Thread.sleep(100);
 
-			if(chooseValSps.equals(CH1_60_SPS_NOTDELAY[0])){
-				serialPort.writeString(CH1_60_SPS_NOTDELAY[1]);
-				System.out.println("[a]");
-			}else if(chooseValSps.equals(CH1_30_SPS_31_MS[0])) {
-				System.out.println("[b]");
-				serialPort.writeString(CH1_30_SPS_31_MS[1]);
-			}else if(chooseValSps.equals(CH1_5_SPS_190_MS[0])){
-				System.out.println("[c]");
-				serialPort.writeString(CH1_5_SPS_190_MS[1]);
 
-			}else if(chooseValSps.equals(CH2_30_SPS_NOTDELAY[0])){
-				System.out.println("[d]");
-				serialPort.writeString(CH2_30_SPS_NOTDELAY[1]);
-			}else if(chooseValSps.equals(CH2_10_SPS_50_MS[0])){
-				System.out.println("[e]");
-				serialPort.writeString(CH2_10_SPS_50_MS[1]);
-			}else if(chooseValSps.equals(CH2_5_SPS_100_MS[0])){
-				System.out.println("[f]");
-				serialPort.writeString(CH2_5_SPS_100_MS[1]);
 
-			}else if(chooseValSps.equals(CH3_20_SPS_NOTDELAY[0])){
-				System.out.println("[g]");
-				serialPort.writeString(CH3_20_SPS_NOTDELAY[1]);
-			}else if(chooseValSps.equals(CH3_5_SPS_62_MS[0])){
-				System.out.println("[h]");
-				serialPort.writeString(CH3_5_SPS_62_MS[1]);
+//	public void setChoosesValuesSamplesPerSecond(String[] samplePerSeconds){
+//		switch (maxCh) {
+//			case 1:
+//				comboBox_chooserSamplesPerSecond.setModel(new javax.swing.DefaultComboBoxModel(new String[] {CH1_60_SPS_NOTDELAY[0], CH1_30_SPS_31_MS[0], CH1_5_SPS_190_MS[0]}));
+//				break;
+//			case 2:
+//				comboBox_chooserSamplesPerSecond.setModel(new javax.swing.DefaultComboBoxModel(new String[] {CH2_30_SPS_NOTDELAY[0], CH2_10_SPS_50_MS[0], CH2_5_SPS_100_MS[0]}));
+//				break;
+//			case 3:
+//				comboBox_chooserSamplesPerSecond.setModel(new javax.swing.DefaultComboBoxModel(new String[] {CH3_20_SPS_NOTDELAY[0], CH3_5_SPS_62_MS[0]}));
+//				break;
+//			case 4:
+//				comboBox_chooserSamplesPerSecond.setModel(new javax.swing.DefaultComboBoxModel(new String[] {CH4_15_SPS_NOTDELAY[0], CH4_5_SPS_45_MS[0]}));
+//				break;
+//		}
+//	}
 
-			}else if(chooseValSps.equals(CH4_15_SPS_NOTDELAY[0])){
-				System.out.println("[k]");
-				serialPort.writeString(CH4_15_SPS_NOTDELAY[1]);
-			}else if(chooseValSps.equals(CH4_5_SPS_45_MS[0])){
-				System.out.println("[l]");
-				serialPort.writeString(CH4_5_SPS_45_MS[1]);
-			}
 
-			System.out.println("||||||||| " + chooseValSps);
-		} catch (SerialPortException ex) {
-			Logger.getLogger(DynamicData.class.getName()).log(Level.SEVERE, null, ex);
-		}catch (InterruptedException ex) {
-			Logger.getLogger(DynamicData.class.getName()).log(Level.SEVERE, null, ex);
-		}
-	}
-
-	public void setChoosesValuesSamplesPerSecond(int maxCh){
-		switch (maxCh) {
-			case 1:
-				comboBox_chooserSamplesPerSecond.setModel(new javax.swing.DefaultComboBoxModel(new String[] {CH1_60_SPS_NOTDELAY[0], CH1_30_SPS_31_MS[0], CH1_5_SPS_190_MS[0]}));
-				break;
-			case 2:
-				comboBox_chooserSamplesPerSecond.setModel(new javax.swing.DefaultComboBoxModel(new String[] {CH2_30_SPS_NOTDELAY[0], CH2_10_SPS_50_MS[0], CH2_5_SPS_100_MS[0]}));
-				break;
-			case 3:
-				comboBox_chooserSamplesPerSecond.setModel(new javax.swing.DefaultComboBoxModel(new String[] {CH3_20_SPS_NOTDELAY[0], CH3_5_SPS_62_MS[0]}));
-				break;
-			case 4:
-				comboBox_chooserSamplesPerSecond.setModel(new javax.swing.DefaultComboBoxModel(new String[] {CH4_15_SPS_NOTDELAY[0], CH4_5_SPS_45_MS[0]}));
-				break;
-		}
-	}
-
-	public  void uartInit(){
-		//Передаём в конструктор имя порта
-		serialPort = new SerialPort(comboBox_chooserCOMPort.getSelectedItem().toString());
-		try {
-			//Открываем порт
-			serialPort.openPort();
-			label_portState.setText(PORT_OPEN);
-			label_portState.setForeground(new Color(50, 205, 50));
-			//Выставляем параметры
-			serialPort.setParams(SerialPort.BAUDRATE_9600,
-					SerialPort.DATABITS_8,
-					SerialPort.STOPBITS_1,
-					SerialPort.PARITY_NONE);
-			//Включаем аппаратное управление потоком (для FT232 нжуно отключать)
-//            serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN | 
-//                                          SerialPort.FLOWCONTROL_RTSCTS_OUT);
-			//Устанавливаем ивент лисенер и маску
-			serialPort.addEventListener(new PortReader(), SerialPort.MASK_RXCHAR);
-			//Отправляем запрос устройству
-//            serialPort.writeString("1"); //начинаем с канала 1
-		}
-		catch (SerialPortException ex) {
-			System.out.println(ex);
-			System.out.println("Порт закрыт");
-			label_portState.setText(PORT_CLOSE);
-			label_portState.setForeground(Color.red);
-		}
-	}
-
-	int sc = 0;
-	private class PortReader implements SerialPortEventListener {
-		@Override
-		public void serialEvent(SerialPortEvent event) {
-			synchronized(event){
-				if(event.isRXCHAR() && event.getEventValue() > 0){
-//		    System.out.println("event.isRXCHAR() && event.getEventValue() > 0   is ok");
-					try {
-						if (startStopAction) {
-							if(chaneelCounter == 1) {
-								iArr = serialPort.readIntArray();
-								dataValueMcu = iArr[0];
-//				series1.add(new Millisecond(), dataValueMcu);
-								result.addChannel1Val(iArr[0]);
-								//---------------------------------------------
-//				Т.к.наш осц может выдавть на 1 канал мксимум
-//				60 выборок/сек, но jFreeChart не может добавлять 
-//				данные с такой частотой, поэтому в этом коде 
-//				происходит добваление через раз. Это в итоге 
-//				позволяет искуственно уменьшить добавление
-//				данных до 30 в/с. Но завпись идет все равно
-//				со скоростью в 60 в/с.
-								if (sc == 1 && maxCh == 1) {
-									series1.add(new Millisecond(), dataValueMcu);
-									sc = 0;
-								}else{
-									sc ++;
-								}
-								if (maxCh > 1) {
-									series1.add(new Millisecond(), dataValueMcu);
-								}
-								//---------------------------------------------
-							}
-							else if(chaneelCounter == 2){
-								iArr = serialPort.readIntArray();
-								dataValueMcu = iArr[0];
-								series2.add(new Millisecond(), dataValueMcu);
-								result.addChannel2Val(iArr[0]);
-							}
-							else if(chaneelCounter == 3){
-								iArr = serialPort.readIntArray();
-								dataValueMcu = iArr[0];
-								series3.add(new Millisecond(), dataValueMcu);
-								result.addChannel3Val(iArr[0]);
-							}
-							else if(chaneelCounter == 4){
-								iArr = serialPort.readIntArray();
-								dataValueMcu = iArr[0];
-								series4.add(new Millisecond(), dataValueMcu);
-								result.addChannel4Val(iArr[0]);
-							}
-							//и снова отправляем запрос для следующего канала
-							if (chaneelCounter == 1) {
-								if (maxCh == 1) {
-									serialPort.writeString("1");
-									chaneelCounter = 1;
-								}
-								else if (maxCh > 1) {
-									serialPort.writeString("2");
-									chaneelCounter = 2;
-								}
-							}
-							else if (chaneelCounter == 2){
-								if (maxCh == 2) {
-									serialPort.writeString("1");
-									chaneelCounter = 1;
-								}else if (maxCh > 2) {
-									serialPort.writeString("3");
-									chaneelCounter = 3;
-								}
-							}
-							else if (chaneelCounter == 3){
-								if (maxCh == 3) {
-									serialPort.writeString("1");
-									chaneelCounter = 1;
-								}else if (maxCh > 3) {
-									serialPort.writeString("4");
-									chaneelCounter = 4;
-								}
-							}
-							else if (chaneelCounter == 4){
-								if (maxCh == 4) {
-									serialPort.writeString("1");
-									chaneelCounter = 1;
-								}
-							}
-						}
-					}
-					catch (SerialPortException ex) {
-						System.out.println(ex);
-						System.out.println("error  public void serialEvent(SerialPortEvent event)");
-					}
-				}
-			}
-		}
-	}
 
 
 
