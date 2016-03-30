@@ -127,38 +127,42 @@ public class Controller implements ControllerCallback{
         }
     }
 
+    /**
+     * User selected channels numbers for one measuring process.
+     */
     private int maxCh = 4;
 
-    public String[] setChannelsNum(int channels) {
+    /**
+     * Set channels numbers was user selected.
+     * This limits number channels request to get ADC data from COM port.
+     * This method must be called in UI.
+     *
+     * @param channels numbers of channels user selected.
+     *                 Channels numbering begins at 0.
+     *                 Maximum channels processed in this method implementation = 4 (0 ... 3).
+     * @return available variants sample per seconds to each user selected channel.
+     */
+    public String[] setChannelsNum(int channels) throws LargeChannelsSetupException {
         switch (channels) {
             case 0:
                 maxCh = 1;
-//                setChoosesValuesSamplesPerSecond(maxCh);
-//                setMCUSamplesPerSecond((String)comboBox_chooserSamplesPerSecond.getSelectedItem());
-//                break;
                 return new String[]{CH1_60_SPS_NOTDELAY[0], CH1_30_SPS_31_MS[0], CH1_5_SPS_190_MS[0]};
+
             case 1:
                 maxCh = 2;
-//                setChoosesValuesSamplesPerSecond(maxCh);
-//                setMCUSamplesPerSecond((String)comboBox_chooserSamplesPerSecond.getSelectedItem());
-//                break;
                 return new String[]{CH2_30_SPS_NOTDELAY[0], CH2_10_SPS_50_MS[0], CH2_5_SPS_100_MS[0]};
+
             case 2:
                 maxCh = 3;
-//                setChoosesValuesSamplesPerSecond(maxCh);
-//                setMCUSamplesPerSecond((String)comboBox_chooserSamplesPerSecond.getSelectedItem());
-//                break;
                 return new String[]{CH3_20_SPS_NOTDELAY[0], CH3_5_SPS_62_MS[0]};
+
             case 3:
                 maxCh = 4;
-//                setChoosesValuesSamplesPerSecond(maxCh);
-//                setMCUSamplesPerSecond((String)comboBox_chooserSamplesPerSecond.getSelectedItem());
-//                break;
                 return new String[]{CH4_15_SPS_NOTDELAY[0], CH4_5_SPS_45_MS[0]};
+
             default:
-                System.out.println("itemStateChanged > 4");
+                throw new LargeChannelsSetupException();
         }
-        return null;
     }
 
     public void setMCUSamplesPerSecond(String chooseValSps){
@@ -206,23 +210,6 @@ public class Controller implements ControllerCallback{
             Logger.getLogger(DynamicData.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
-//    public void setChoosesValuesSamplesPerSecond(int maxCh){
-//        switch (maxCh) {
-//            case 1:
-//                comboBox_chooserSamplesPerSecond.setModel(new javax.swing.DefaultComboBoxModel(new String[] {CH1_60_SPS_NOTDELAY[0], CH1_30_SPS_31_MS[0], CH1_5_SPS_190_MS[0]}));
-//                break;
-//            case 2:
-//                comboBox_chooserSamplesPerSecond.setModel(new javax.swing.DefaultComboBoxModel(new String[] {CH2_30_SPS_NOTDELAY[0], CH2_10_SPS_50_MS[0], CH2_5_SPS_100_MS[0]}));
-//                break;
-//            case 3:
-//                comboBox_chooserSamplesPerSecond.setModel(new javax.swing.DefaultComboBoxModel(new String[] {CH3_20_SPS_NOTDELAY[0], CH3_5_SPS_62_MS[0]}));
-//                break;
-//            case 4:
-//                comboBox_chooserSamplesPerSecond.setModel(new javax.swing.DefaultComboBoxModel(new String[] {CH4_15_SPS_NOTDELAY[0], CH4_5_SPS_45_MS[0]}));
-//                break;
-//        }
-//    }
 
     /*
      * -------------------------------

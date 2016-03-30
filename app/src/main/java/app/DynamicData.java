@@ -194,8 +194,13 @@ public class DynamicData extends ApplicationFrame implements ViewCallback{
 			comboBox_chooserChaneels.addItemListener(new ItemListener() {
 				@Override
 				public void itemStateChanged(ItemEvent e) {
-                    String[] availableSPS = controller.setChannelsNum(comboBox_chooserChaneels.getSelectedIndex());
-                    comboBox_chooserSamplesPerSecond.setModel(new javax.swing.DefaultComboBoxModel(availableSPS));
+					String[] availableSPS = new String[0];
+					try {
+						availableSPS = controller.setChannelsNum(comboBox_chooserChaneels.getSelectedIndex());
+					} catch (LargeChannelsSetupException e1) {
+						e1.printStackTrace();
+					}
+					comboBox_chooserSamplesPerSecond.setModel(new javax.swing.DefaultComboBoxModel(availableSPS));
                 }
 			});
 
