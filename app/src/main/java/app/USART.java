@@ -59,7 +59,7 @@ public class USART {
             //Открываем порт
             serialPort.openPort();
 //
-            controllerCallback.setPortStateLabel(PortStates.OPEN);
+            controllerCallback.setPortState(PortStates.OPEN);
             //Выставляем параметры
             serialPort.setParams(SerialPort.BAUDRATE_9600,
                     SerialPort.DATABITS_8,
@@ -76,7 +76,7 @@ public class USART {
         catch (SerialPortException ex) {
             ex.printStackTrace();
             System.out.println("Порт закрыт");
-            controllerCallback.setPortStateLabel(PortStates.CLOSE);
+            controllerCallback.setPortState(PortStates.CLOSE);
         }
     }
 
@@ -87,7 +87,7 @@ public class USART {
             synchronized(event){
                 if(event.isRXCHAR() && event.getEventValue() > 0){
                     try {
-                        controllerCallback.setADCData(serialPort.readIntArray()[0]);
+                        controllerCallback.addCOMPortData(serialPort.readIntArray()[0]);
                     } catch (SerialPortException e) {
                         e.printStackTrace();
                     }

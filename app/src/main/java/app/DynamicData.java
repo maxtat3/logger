@@ -108,8 +108,8 @@ public class DynamicData extends ApplicationFrame implements ViewCallback{
     }
 
     @Override
-    public void addCh1Data(int adcData) {
-        series1.add(new Millisecond(), adcData);
+    public void addChannel1Point(int channel1Point) {
+        series1.add(new Millisecond(), channel1Point);
     }
 
 //todo добавить bool isOpenPort. Эта переменная может применятся для блокировки UI если нет подключения к порту

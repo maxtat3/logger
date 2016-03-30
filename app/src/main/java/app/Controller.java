@@ -224,7 +224,7 @@ public class Controller implements ControllerCallback{
      */
 
     @Override
-    public void setPortStateLabel(USART.PortStates portStates) {
+    public void setPortState(USART.PortStates portStates) {
         viewCallback.setPortState(portStates);
     }
 
@@ -233,13 +233,13 @@ public class Controller implements ControllerCallback{
     int sc = 0;
 
     @Override
-    public void setADCData(int adcAtomicOnePointRes) {
+    public void addCOMPortData(int adcAtomicOnePointRes) {
 //        System.out.println("event.isRXCHAR() && event.getEventValue() > 0   is ok");
         if (startStopAction) {
             if(chaneelCounter == 1) {
 //				series1.add(new Millisecond(), dataValueMcu);
                 result.addChannel1Val(adcAtomicOnePointRes);
-                viewCallback.addCh1Data(adcAtomicOnePointRes);
+                viewCallback.addChannel1Point(adcAtomicOnePointRes);
                 //---------------------------------------------
 //				Т.к.наш осц может выдавть на 1 канал мксимум
 //				60 выборок/сек, но jFreeChart не может добавлять
