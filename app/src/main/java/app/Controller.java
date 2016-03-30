@@ -35,6 +35,11 @@ public class Controller implements ControllerCallback{
     private static final String[] CH4_15_SPS_NOTDELAY = {SAMPLES_PER_SECOND[8], "k"};
     private static final String[] CH4_5_SPS_45_MS = {SAMPLES_PER_SECOND[9], "l"};
 
+    public static final String CHANNEL_1 = "1";
+    public static final String CHANNEL_2 = "2";
+    public static final String CHANNEL_3 = "3";
+    public static final String CHANNEL_4 = "4";
+
     private USART usart;
     private ViewCallback viewCallback;
 
@@ -102,7 +107,7 @@ public class Controller implements ControllerCallback{
                 }
             //старт измерений
         }else{
-            sendString("1");
+            sendString(CHANNEL_1);
             startStopAction = true;
         }
 
@@ -265,9 +270,6 @@ public class Controller implements ControllerCallback{
                 result.addChannel1Val(adcAtomicOnePoint);
                 viewCallback.addChannel1Point(adcAtomicOnePoint);
             }
-
-//            result.addChannel1Val(adcAtomicOnePoint);
-//            viewCallback.addChannel1Point(adcAtomicOnePoint);
         }
         else if(channelCounter == 2){
             result.addChannel2Val(adcAtomicOnePoint);
@@ -318,35 +320,35 @@ public class Controller implements ControllerCallback{
     private void sendNextChannelRequest() {
         if (channelCounter == 1) {
             if (maxCh == 1) {
-                usart.writeString("1");
+                usart.writeString(CHANNEL_1);
                 channelCounter = 1;
             }
             else if (maxCh > 1) {
-                usart.writeString("2");
+                usart.writeString(CHANNEL_2);
                 channelCounter = 2;
             }
         }
         else if (channelCounter == 2){
             if (maxCh == 2) {
-                usart.writeString("1");
+                usart.writeString(CHANNEL_1);
                 channelCounter = 1;
             }else if (maxCh > 2) {
-                usart.writeString("3");
+                usart.writeString(CHANNEL_3);
                 channelCounter = 3;
             }
         }
         else if (channelCounter == 3){
             if (maxCh == 3) {
-                usart.writeString("1");
+                usart.writeString(CHANNEL_1);
                 channelCounter = 1;
             }else if (maxCh > 3) {
-                usart.writeString("4");
+                usart.writeString(CHANNEL_4);
                 channelCounter = 4;
             }
         }
         else if (channelCounter == 4){
             if (maxCh == 4) {
-                usart.writeString("1");
+                usart.writeString(CHANNEL_1);
                 channelCounter = 1;
             }
         }
