@@ -105,6 +105,8 @@ public class Controller implements ControllerCallback{
             sendString("1");
             startStopAction = true;
         }
+
+        channelCounter = 1; //reset at each new measure
     }
 
     private boolean recordAction = false;
@@ -228,84 +230,124 @@ public class Controller implements ControllerCallback{
         viewCallback.setPortState(portStates);
     }
 
-    public  int chaneelCounter = 1;
-    int sc = 0;
+    /**
+     * Calculate what channel is active in each time measure moment.
+     * When sending the request to get data from COM port, this counter
+     * is incremented value to 1 pointing to get data from next channel,
+     * but limited to the maximum numbers of channels {@link #maxCh}
+     * that user has selected.
+     * Default value 1, this means is 1 channel number pointing.
+     */
+    private int channelCounter = 1;
 
     @Override
     public void addCOMPortData(int adcAtomicOnePointRes) {
-//        System.out.println("event.isRXCHAR() && event.getEventValue() > 0   is ok");
         if (startStopAction) {
-            if(chaneelCounter == 1) {
-//				series1.add(new Millisecond(), dataValueMcu);
-                result.addChannel1Val(adcAtomicOnePointRes);
-                viewCallback.addChannel1Point(adcAtomicOnePointRes);
-                //---------------------------------------------
-//				Т.к.наш осц может выдавть на 1 канал мксимум
-//				60 выборок/сек, но jFreeChart не может добавлять
-//				данные с такой частотой, поэтому в этом коде
-//				происходит добваление через раз. Это в итоге
-//				позволяет искуственно уменьшить добавление
-//				данных до 30 в/с. Но завпись идет все равно
-//				со скоростью в 60 в/с.
-                if (sc == 1 && maxCh == 1) {
-//                        series1.add(new Millisecond(), dataValueMcu);
-//                    System.out.println("adc ch 1 = " + dataValueMcu); // by logging
-                    sc = 0;
-                }else{
-                    sc ++;
-                }
-                if (maxCh > 1) {
-//                        series1.add(new Millisecond(), dataValueMcu);
-//                    System.out.println("adc ch 1 = " + dataValueMcu); // by logging
-                }
-                //---------------------------------------------
+            processReceivedADCData(adcAtomicOnePointRes);
+            sendNextChannelRequest(); // So send request to get data next channel
+        }
+    }
+
+    /**
+     * Distributed of ADC data between channels.
+     *
+     * @param adcAtomicOnePoint ADC data one point of the one of channel.
+     *                             From this points build a line on chart.
+     */
+    private void processReceivedADCData(int adcAtomicOnePoint) {
+        if(channelCounter == 1) {
+            //possible activate accordance chart only one channel
+            if (maxCh == 1 && accordanceChart(true))
+                viewCallback.addChannel1Point(adcAtomicOnePoint);
+            result.addChannel1Val(adcAtomicOnePoint);
+
+            if (maxCh > 1) {
+                result.addChannel1Val(adcAtomicOnePoint);
+                viewCallback.addChannel1Point(adcAtomicOnePoint);
             }
-                else if(chaneelCounter == 2){
-                    result.addChannel2Val(adcAtomicOnePointRes);
-                    viewCallback.addChannel2Point(adcAtomicOnePointRes);
-                }
-                else if(chaneelCounter == 3){
-                    result.addChannel3Val(adcAtomicOnePointRes);
-                    viewCallback.addChannel3Point(adcAtomicOnePointRes);
-                }
-                else if(chaneelCounter == 4){
-                    result.addChannel4Val(adcAtomicOnePointRes);
-                    viewCallback.addChannel4Point(adcAtomicOnePointRes);
-                }
-            //и снова отправляем запрос для следующего канала
-            if (chaneelCounter == 1) {
-                if (maxCh == 1) {
-                    usart.writeString("1");
-                    chaneelCounter = 1;
-                }
-                else if (maxCh > 1) {
-                    usart.writeString("2");
-                    chaneelCounter = 2;
-                }
+
+//            result.addChannel1Val(adcAtomicOnePoint);
+//            viewCallback.addChannel1Point(adcAtomicOnePoint);
+        }
+        else if(channelCounter == 2){
+            result.addChannel2Val(adcAtomicOnePoint);
+            viewCallback.addChannel2Point(adcAtomicOnePoint);
+        }
+        else if(channelCounter == 3){
+            result.addChannel3Val(adcAtomicOnePoint);
+            viewCallback.addChannel3Point(adcAtomicOnePoint);
+        }
+        else if(channelCounter == 4){
+            result.addChannel4Val(adcAtomicOnePoint);
+            viewCallback.addChannel4Point(adcAtomicOnePoint);
+        }
+    }
+
+    /**
+     * Counter used ony for accordance chart by converted 60sps to 30sps by one channel worked.
+     */
+    private int accordanceCounter = 0;
+
+    /**
+     * Логгер может выдавть на 1 канал максимум 60 выборок/сек,
+     * но jFreeChart иногда могут возникать проблемы с добавлением данных
+     * на такой частоте, поэтому в этом методе происходит добваление точек
+     * на график через раз. Это в итоге позволяет искуственно уменьшить
+     * добавление данных до 30 в/с. Но завпись идет все равно со скоростью в 60 в/с.
+     *
+     * @param isTuneToChart true - делать подстройку под библиотеку графика.
+     * @return true - добавлять данные на график, false - не добавлять. По умолчание true.
+     */
+    private boolean accordanceChart(boolean isTuneToChart) {
+        if (isTuneToChart) {
+
+            if (accordanceCounter == 0 ) { //add data to chart
+                accordanceCounter = 1;
+                return true;
+            }else { //pass data
+                accordanceCounter --;
+                return false;
             }
-            else if (chaneelCounter == 2){
-                if (maxCh == 2) {
-                    usart.writeString("1");
-                    chaneelCounter = 1;
-                }else if (maxCh > 2) {
-                    usart.writeString("3");
-                    chaneelCounter = 3;
-                }
+        }
+        return true;
+    }
+
+    /**
+     * Send request to get ADC data conversion from next channel.
+     */
+    private void sendNextChannelRequest() {
+        if (channelCounter == 1) {
+            if (maxCh == 1) {
+                usart.writeString("1");
+                channelCounter = 1;
             }
-            else if (chaneelCounter == 3){
-                if (maxCh == 3) {
-                    usart.writeString("1");
-                    chaneelCounter = 1;
-                }else if (maxCh > 3) {
-                    usart.writeString("4");
-                    chaneelCounter = 4;
-                }
+            else if (maxCh > 1) {
+                usart.writeString("2");
+                channelCounter = 2;
             }
-            else if (chaneelCounter == 4){
-                if (maxCh == 4) {
-                    usart.writeString("1");
-                    chaneelCounter = 1;
-                }
+        }
+        else if (channelCounter == 2){
+            if (maxCh == 2) {
+                usart.writeString("1");
+                channelCounter = 1;
+            }else if (maxCh > 2) {
+                usart.writeString("3");
+                channelCounter = 3;
+            }
+        }
+        else if (channelCounter == 3){
+            if (maxCh == 3) {
+                usart.writeString("1");
+                channelCounter = 1;
+            }else if (maxCh > 3) {
+                usart.writeString("4");
+                channelCounter = 4;
+            }
+        }
+        else if (channelCounter == 4){
+            if (maxCh == 4) {
+                usart.writeString("1");
+                channelCounter = 1;
             }
         }
     }
