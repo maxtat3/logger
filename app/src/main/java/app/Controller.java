@@ -229,7 +229,6 @@ public class Controller implements ControllerCallback{
     }
 
     public  int chaneelCounter = 1;
-    private double  dataValueMcu = 0;
     int sc = 0;
 
     @Override
@@ -261,24 +260,18 @@ public class Controller implements ControllerCallback{
                 }
                 //---------------------------------------------
             }
-//                else if(chaneelCounter == 2){
-//                    iArr = serialPort.readIntArray();
-//                    dataValueMcu = iArr[0];
-//                    series2.add(new Millisecond(), dataValueMcu);
-//                    result.addChannel2Val(iArr[0]);
-//                }
-//                else if(chaneelCounter == 3){
-//                    iArr = serialPort.readIntArray();
-//                    dataValueMcu = iArr[0];
-//                    series3.add(new Millisecond(), dataValueMcu);
-//                    result.addChannel3Val(iArr[0]);
-//                }
-//                else if(chaneelCounter == 4){
-//                    iArr = serialPort.readIntArray();
-//                    dataValueMcu = iArr[0];
-//                    series4.add(new Millisecond(), dataValueMcu);
-//                    result.addChannel4Val(iArr[0]);
-//                }
+                else if(chaneelCounter == 2){
+                    result.addChannel2Val(adcAtomicOnePointRes);
+                    viewCallback.addChannel2Point(adcAtomicOnePointRes);
+                }
+                else if(chaneelCounter == 3){
+                    result.addChannel3Val(adcAtomicOnePointRes);
+                    viewCallback.addChannel3Point(adcAtomicOnePointRes);
+                }
+                else if(chaneelCounter == 4){
+                    result.addChannel4Val(adcAtomicOnePointRes);
+                    viewCallback.addChannel4Point(adcAtomicOnePointRes);
+                }
             //и снова отправляем запрос для следующего канала
             if (chaneelCounter == 1) {
                 if (maxCh == 1) {

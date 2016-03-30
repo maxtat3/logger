@@ -112,6 +112,21 @@ public class DynamicData extends ApplicationFrame implements ViewCallback{
         series1.add(new Millisecond(), channel1Point);
     }
 
+	@Override
+	public void addChannel2Point(int channel2Point) {
+		series2.add(new Millisecond(), channel2Point);
+	}
+
+	@Override
+	public void addChannel3Point(int channel3Point) {
+		series3.add(new Millisecond(), channel3Point);
+	}
+
+	@Override
+	public void addChannel4Point(int channel4Point) {
+		series4.add(new Millisecond(), channel4Point);
+	}
+
 //todo добавить bool isOpenPort. Эта переменная может применятся для блокировки UI если нет подключения к порту
 
     class DemoPanel extends JPanel implements ActionListener{
