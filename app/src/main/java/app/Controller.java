@@ -43,6 +43,40 @@ public class Controller implements ControllerCallback{
     private USART usart;
     private ViewCallback viewCallback;
 
+    /**
+     * Calculate what channel is active in each time measure moment.
+     * When sending the request to get data from COM port, this counter
+     * is incremented value to 1 pointing to get data from next channel,
+     * but limited to the maximum numbers of channels {@link #maxCh}
+     * that user has selected.
+     * Default value 1, this means is 1 channel number pointing.
+     */
+    private int channelCounter = 1;
+
+    /**
+     * User selected channels numbers for one measuring process.
+     */
+    private int maxCh = 4;
+
+    /**
+     * Do recording data to file in measure process.
+     * true - yes, do recorded to file
+     */
+    private boolean isRecord = false;
+
+    /**
+     * Is started measure process action.
+     * true - process started.
+     */
+    private boolean isStartAction = false;
+
+    /**
+     * Result object created when user selected record to file.
+     * @see #isRecord
+     */
+    private Result result = new Result();
+
+
     public Controller(ViewCallback viewCallback) {
         this.viewCallback = viewCallback;
         usart = new USART(this);
@@ -81,17 +115,13 @@ public class Controller implements ControllerCallback{
         usart.writeString(text);
     }
 
-
-    private boolean startStopAction = false;
-    private Result result = new Result();
-
     /**
      * Start or stop measure process
      */
     public void doStartStopMsr() {
         //стоп измерений
-        if (startStopAction) {
-            startStopAction = false;
+        if (isStartAction) {
+            isStartAction = false;
             if (isRecord)
                 try {
                     // 4 - may be dynamic change when user selected channel number
@@ -108,17 +138,11 @@ public class Controller implements ControllerCallback{
             //старт измерений
         }else{
             sendString(CHANNEL_1);
-            startStopAction = true;
+            isStartAction = true;
         }
 
         channelCounter = 1; //reset at each new measure
     }
-
-    /**
-     * Do recording data to file in measure process.
-     * true - yes, do recorded to file
-     */
-    private boolean isRecord = false;
 
     /**
      * Start or stop record measured channels data to file
@@ -130,11 +154,6 @@ public class Controller implements ControllerCallback{
             isRecord = true;
         }
     }
-
-    /**
-     * User selected channels numbers for one measuring process.
-     */
-    private int maxCh = 4;
 
     /**
      * Set channels numbers was user selected.
@@ -226,19 +245,9 @@ public class Controller implements ControllerCallback{
         viewCallback.setPortState(portStates);
     }
 
-    /**
-     * Calculate what channel is active in each time measure moment.
-     * When sending the request to get data from COM port, this counter
-     * is incremented value to 1 pointing to get data from next channel,
-     * but limited to the maximum numbers of channels {@link #maxCh}
-     * that user has selected.
-     * Default value 1, this means is 1 channel number pointing.
-     */
-    private int channelCounter = 1;
-
     @Override
     public void addCOMPortData(int adcAtomicOnePointRes) {
-        if (startStopAction) {
+        if (isStartAction) {
             processReceivedADCData(adcAtomicOnePointRes);
             sendNextChannelRequest(); // So send request to get data next channel
         }
