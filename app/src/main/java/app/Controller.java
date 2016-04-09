@@ -92,7 +92,7 @@ public class Controller implements ControllerCallback{
         //стоп измерений
         if (startStopAction) {
             startStopAction = false;
-            if (recordAction)
+            if (isRecord)
                 try {
                     // 4 - may be dynamic change when user selected channel number
                     new Recorder().writeResultsToFile(
@@ -114,16 +114,20 @@ public class Controller implements ControllerCallback{
         channelCounter = 1; //reset at each new measure
     }
 
-    private boolean recordAction = false;
+    /**
+     * Do recording data to file in measure process.
+     * true - yes, do recorded to file
+     */
+    private boolean isRecord = false;
 
     /**
      * Start or stop record measured channels data to file
      */
     public void doRecord() {
-        if (recordAction) {
-            recordAction = false;
+        if (isRecord) {
+            isRecord = false;
         } else{
-            recordAction = true;
+            isRecord = true;
         }
     }
 
