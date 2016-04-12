@@ -76,6 +76,8 @@ public class Controller implements ControllerCallback{
      */
     private Result result = new Result();
 
+    private Channel channel = new Channel();
+
 
     public Controller(ViewCallback viewCallback) {
         this.viewCallback = viewCallback;
@@ -169,19 +171,33 @@ public class Controller implements ControllerCallback{
         switch (channels) {
             case 0:
                 maxCh = 1;
-                return new String[]{CH1_60_SPS_NOTDELAY[0], CH1_30_SPS_31_MS[0], CH1_5_SPS_190_MS[0]};
+                return new String[]{
+                        channel.getCh1And60sps().getSpsName(),
+                        channel.getCh1And30sps().getSpsName(),
+                        channel.getCh1And5sps().getSpsName(),
+                };
 
             case 1:
                 maxCh = 2;
-                return new String[]{CH2_30_SPS_NOTDELAY[0], CH2_10_SPS_50_MS[0], CH2_5_SPS_100_MS[0]};
+                return new String[]{
+                        channel.getCh2And30sps().getSpsName(),
+                        channel.getCh2And10sps().getSpsName(),
+                        channel.getCh2And5sps().getSpsName()
+                };
 
             case 2:
                 maxCh = 3;
-                return new String[]{CH3_20_SPS_NOTDELAY[0], CH3_5_SPS_62_MS[0]};
+                return new String[]{
+                        channel.getCh3And20sps().getSpsName(),
+                        channel.getCh3And5sps().getSpsName()
+                };
 
             case 3:
                 maxCh = 4;
-                return new String[]{CH4_15_SPS_NOTDELAY[0], CH4_5_SPS_45_MS[0]};
+                return new String[]{
+                        channel.getCh4And15sps().getSpsName(),
+                        channel.getCh4And5sps().getSpsName()
+                };
 
             default:
                 throw new LargeChannelsSetupException();
@@ -193,39 +209,39 @@ public class Controller implements ControllerCallback{
             sendString("s");    //спец символ - установка mcu в режим выбора типа задержки
             Thread.sleep(100);
 
-            if(chooseValSps.equals(CH1_60_SPS_NOTDELAY[0])){
-                sendString(CH1_60_SPS_NOTDELAY[1]);
+            if(chooseValSps.equals(channel.getCh1And60sps().getSpsName())){ //todo - may be change to switch construction
+                sendString(channel.getCh1And60sps().getCmd());
                 System.out.println("[a]");
-            }else if(chooseValSps.equals(CH1_30_SPS_31_MS[0])) {
+            }else if(chooseValSps.equals(channel.getCh1And30sps().getSpsName())) {
                 System.out.println("[b]");
-                sendString(CH1_30_SPS_31_MS[1]);
-            }else if(chooseValSps.equals(CH1_5_SPS_190_MS[0])){
+                sendString(channel.getCh1And30sps().getCmd());
+            }else if(chooseValSps.equals(channel.getCh1And5sps().getSpsName())){
                 System.out.println("[c]");
-                sendString(CH1_5_SPS_190_MS[1]);
+                sendString(channel.getCh1And5sps().getCmd());
 
-            }else if(chooseValSps.equals(CH2_30_SPS_NOTDELAY[0])){
+            }else if(chooseValSps.equals(channel.getCh2And30sps().getSpsName())){
                 System.out.println("[d]");
-                sendString(CH2_30_SPS_NOTDELAY[1]);
-            }else if(chooseValSps.equals(CH2_10_SPS_50_MS[0])){
+                sendString(channel.getCh2And30sps().getCmd());
+            }else if(chooseValSps.equals(channel.getCh2And10sps().getSpsName())){
                 System.out.println("[e]");
-                sendString(CH2_10_SPS_50_MS[1]);
-            }else if(chooseValSps.equals(CH2_5_SPS_100_MS[0])){
+                sendString(channel.getCh2And10sps().getCmd());
+            }else if(chooseValSps.equals(channel.getCh2And5sps().getSpsName())){
                 System.out.println("[f]");
-                sendString(CH2_5_SPS_100_MS[1]);
+                sendString(channel.getCh2And5sps().getCmd());
 
-            }else if(chooseValSps.equals(CH3_20_SPS_NOTDELAY[0])){
+            }else if(chooseValSps.equals(channel.getCh3And20sps().getSpsName())){
                 System.out.println("[g]");
-                sendString(CH3_20_SPS_NOTDELAY[1]);
-            }else if(chooseValSps.equals(CH3_5_SPS_62_MS[0])){
+                sendString(channel.getCh3And20sps().getCmd());
+            }else if(chooseValSps.equals(channel.getCh3And5sps().getSpsName())){
                 System.out.println("[h]");
-                sendString(CH3_5_SPS_62_MS[1]);
+                sendString(channel.getCh3And5sps().getCmd());
 
-            }else if(chooseValSps.equals(CH4_15_SPS_NOTDELAY[0])){
+            }else if(chooseValSps.equals(channel.getCh4And15sps().getSpsName())){
                 System.out.println("[k]");
-                sendString(CH4_15_SPS_NOTDELAY[1]);
-            }else if(chooseValSps.equals(CH4_5_SPS_45_MS[0])){
+                sendString(channel.getCh4And15sps().getCmd());
+            }else if(chooseValSps.equals(channel.getCh4And5sps().getSpsName())){
                 System.out.println("[l]");
-                sendString(CH4_5_SPS_45_MS[1]);
+                sendString(channel.getCh4And5sps().getCmd());
             }
 
             System.out.println("||||||||| " + chooseValSps);
