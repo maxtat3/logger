@@ -306,35 +306,35 @@ public class Controller implements ControllerCallback{
     private void sendNextChannelRequest() {
         if (channelCounter == CH_1_INT) {
             if (maxCh == CH_1_INT) {
-                usart.writeString(CH_1_CMD);
+                sendString(CH_1_CMD);
                 channelCounter = CH_1_INT;
             }
             else if (maxCh > CH_1_INT) {
-                usart.writeString(CH_2_CMD);
+                sendString(CH_2_CMD);
                 channelCounter = CH_2_INT;
             }
         }
         else if (channelCounter == CH_2_INT){
             if (maxCh == CH_2_INT) {
-                usart.writeString(CH_1_CMD);
+                sendString(CH_1_CMD);
                 channelCounter = CH_1_INT;
             }else if (maxCh > CH_2_INT) {
-                usart.writeString(CH_3_CMD);
+                sendString(CH_3_CMD);
                 channelCounter = 3;
             }
         }
         else if (channelCounter == CH_3_INT){
             if (maxCh == CH_3_INT) {
-                usart.writeString(CH_1_CMD);
+                sendString(CH_1_CMD);
                 channelCounter = CH_1_INT;
             }else if (maxCh > CH_3_INT) {
-                usart.writeString(CH_4_CMD);
+                sendString(CH_4_CMD);
                 channelCounter = CH_4_INT;
             }
         }
         else if (channelCounter == CH_4_INT){
             if (maxCh == CH_4_INT) {
-                usart.writeString(CH_1_CMD);
+                sendString(CH_1_CMD);
                 channelCounter = CH_1_INT;
             }
         }
