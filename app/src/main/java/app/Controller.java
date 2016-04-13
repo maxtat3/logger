@@ -8,10 +8,18 @@ import java.util.logging.Logger;
  */
 public class Controller implements ControllerCallback{
 
-    public static final String CHANNEL_1 = "1";
-    public static final String CHANNEL_2 = "2";
-    public static final String CHANNEL_3 = "3";
-    public static final String CHANNEL_4 = "4";
+    //todo - may be pack to inner class and moved to model. Think about it.
+    // Commands channels selected to translate to COM port
+    public static final String CH_1_CMD = "1";
+    public static final String CH_2_CMD = "2";
+    public static final String CH_3_CMD = "3";
+    public static final String CH_4_CMD = "4";
+    // Numeric representation of channels
+    // All
+    public static final int CH_1_INT = 1;
+    public static final int CH_2_INT = 2;
+    public static final int CH_3_INT = 3;
+    public static final int CH_4_INT = 4;
 
     private USART usart;
     private ViewCallback viewCallback;
@@ -24,7 +32,7 @@ public class Controller implements ControllerCallback{
      * that user has selected.
      * Default value 1, this means is 1 channel number pointing.
      */
-    private int channelCounter = 1;
+    private int channelCounter = CH_1_INT;
 
     /**
      * User selected channels numbers for one measuring process.
@@ -112,11 +120,11 @@ public class Controller implements ControllerCallback{
                 }
             //старт измерений
         }else{
-            sendString(CHANNEL_1);
+            sendString(CH_1_CMD);
             isStartAction = true;
         }
 
-        channelCounter = 1; //reset at each new measure
+        channelCounter = CH_1_INT; //reset at each new measure
     }
 
     /**
@@ -143,7 +151,7 @@ public class Controller implements ControllerCallback{
     public String[] setChannelsNum(int channels) throws LargeChannelsSetupException {
         switch (channels) {
             case 0:
-                maxCh = 1;
+                maxCh = CH_1_INT;
                 return new String[]{
                         channel.getCh1And60sps().getSpsName(),
                         channel.getCh1And30sps().getSpsName(),
@@ -151,7 +159,7 @@ public class Controller implements ControllerCallback{
                 };
 
             case 1:
-                maxCh = 2;
+                maxCh = CH_2_INT;
                 return new String[]{
                         channel.getCh2And30sps().getSpsName(),
                         channel.getCh2And10sps().getSpsName(),
@@ -159,14 +167,14 @@ public class Controller implements ControllerCallback{
                 };
 
             case 2:
-                maxCh = 3;
+                maxCh = CH_3_INT;
                 return new String[]{
                         channel.getCh3And20sps().getSpsName(),
                         channel.getCh3And5sps().getSpsName()
                 };
 
             case 3:
-                maxCh = 4;
+                maxCh = CH_4_INT;
                 return new String[]{
                         channel.getCh4And15sps().getSpsName(),
                         channel.getCh4And5sps().getSpsName()
@@ -238,26 +246,26 @@ public class Controller implements ControllerCallback{
      *                             From this points build a line on chart.
      */
     private void processReceivedADCData(int adcAtomicOnePoint) {
-        if(channelCounter == 1) {
+        if(channelCounter == CH_1_INT) {
             //possible activate accordance chart only one channel
-            if (maxCh == 1 && accordanceChart(true))
+            if (maxCh == CH_1_INT && accordanceChart(true))
                 viewCallback.addChannel1Point(adcAtomicOnePoint);
             result.addChannel1Val(adcAtomicOnePoint);
 
-            if (maxCh > 1) {
+            if (maxCh > CH_1_INT) {
                 result.addChannel1Val(adcAtomicOnePoint);
                 viewCallback.addChannel1Point(adcAtomicOnePoint);
             }
         }
-        else if(channelCounter == 2){
+        else if(channelCounter == CH_2_INT){
             result.addChannel2Val(adcAtomicOnePoint);
             viewCallback.addChannel2Point(adcAtomicOnePoint);
         }
-        else if(channelCounter == 3){
+        else if(channelCounter == CH_3_INT){
             result.addChannel3Val(adcAtomicOnePoint);
             viewCallback.addChannel3Point(adcAtomicOnePoint);
         }
-        else if(channelCounter == 4){
+        else if(channelCounter == CH_4_INT){
             result.addChannel4Val(adcAtomicOnePoint);
             viewCallback.addChannel4Point(adcAtomicOnePoint);
         }
@@ -296,38 +304,38 @@ public class Controller implements ControllerCallback{
      * Send request to get ADC data conversion from next channel.
      */
     private void sendNextChannelRequest() {
-        if (channelCounter == 1) {
-            if (maxCh == 1) {
-                usart.writeString(CHANNEL_1);
-                channelCounter = 1;
+        if (channelCounter == CH_1_INT) {
+            if (maxCh == CH_1_INT) {
+                usart.writeString(CH_1_CMD);
+                channelCounter = CH_1_INT;
             }
-            else if (maxCh > 1) {
-                usart.writeString(CHANNEL_2);
-                channelCounter = 2;
+            else if (maxCh > CH_1_INT) {
+                usart.writeString(CH_2_CMD);
+                channelCounter = CH_2_INT;
             }
         }
-        else if (channelCounter == 2){
-            if (maxCh == 2) {
-                usart.writeString(CHANNEL_1);
-                channelCounter = 1;
-            }else if (maxCh > 2) {
-                usart.writeString(CHANNEL_3);
+        else if (channelCounter == CH_2_INT){
+            if (maxCh == CH_2_INT) {
+                usart.writeString(CH_1_CMD);
+                channelCounter = CH_1_INT;
+            }else if (maxCh > CH_2_INT) {
+                usart.writeString(CH_3_CMD);
                 channelCounter = 3;
             }
         }
-        else if (channelCounter == 3){
-            if (maxCh == 3) {
-                usart.writeString(CHANNEL_1);
-                channelCounter = 1;
-            }else if (maxCh > 3) {
-                usart.writeString(CHANNEL_4);
-                channelCounter = 4;
+        else if (channelCounter == CH_3_INT){
+            if (maxCh == CH_3_INT) {
+                usart.writeString(CH_1_CMD);
+                channelCounter = CH_1_INT;
+            }else if (maxCh > CH_3_INT) {
+                usart.writeString(CH_4_CMD);
+                channelCounter = CH_4_INT;
             }
         }
-        else if (channelCounter == 4){
-            if (maxCh == 4) {
-                usart.writeString(CHANNEL_1);
-                channelCounter = 1;
+        else if (channelCounter == CH_4_INT){
+            if (maxCh == CH_4_INT) {
+                usart.writeString(CH_1_CMD);
+                channelCounter = CH_1_INT;
             }
         }
     }
