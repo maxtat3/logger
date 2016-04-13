@@ -209,42 +209,31 @@ public class Controller implements ControllerCallback{
             sendString("s");    //спец символ - установка mcu в режим выбора типа задержки
             Thread.sleep(100);
 
-            if(chooseValSps.equals(channel.getCh1And60sps().getSpsName())){ //todo - may be change to switch construction
+            if(chooseValSps.equals(channel.getCh1And60sps().getSpsName())){
                 sendString(channel.getCh1And60sps().getCmd());
-                System.out.println("[a]");
             }else if(chooseValSps.equals(channel.getCh1And30sps().getSpsName())) {
-                System.out.println("[b]");
                 sendString(channel.getCh1And30sps().getCmd());
             }else if(chooseValSps.equals(channel.getCh1And5sps().getSpsName())){
-                System.out.println("[c]");
                 sendString(channel.getCh1And5sps().getCmd());
 
             }else if(chooseValSps.equals(channel.getCh2And30sps().getSpsName())){
-                System.out.println("[d]");
                 sendString(channel.getCh2And30sps().getCmd());
             }else if(chooseValSps.equals(channel.getCh2And10sps().getSpsName())){
-                System.out.println("[e]");
                 sendString(channel.getCh2And10sps().getCmd());
             }else if(chooseValSps.equals(channel.getCh2And5sps().getSpsName())){
-                System.out.println("[f]");
                 sendString(channel.getCh2And5sps().getCmd());
 
             }else if(chooseValSps.equals(channel.getCh3And20sps().getSpsName())){
-                System.out.println("[g]");
                 sendString(channel.getCh3And20sps().getCmd());
             }else if(chooseValSps.equals(channel.getCh3And5sps().getSpsName())){
-                System.out.println("[h]");
                 sendString(channel.getCh3And5sps().getCmd());
 
             }else if(chooseValSps.equals(channel.getCh4And15sps().getSpsName())){
-                System.out.println("[k]");
                 sendString(channel.getCh4And15sps().getCmd());
             }else if(chooseValSps.equals(channel.getCh4And5sps().getSpsName())){
-                System.out.println("[l]");
                 sendString(channel.getCh4And5sps().getCmd());
             }
 
-            System.out.println("||||||||| " + chooseValSps);
         }catch (InterruptedException ex) {
             Logger.getLogger(DynamicData.class.getName()).log(Level.SEVERE, null, ex);
         }
