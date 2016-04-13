@@ -340,7 +340,7 @@ public class Controller implements ControllerCallback{
                 channelCounter = CH_1_INT;
             }else if (maxCh > CH_2_INT) {
                 sendString(CH_3_CMD);
-                channelCounter = 3;
+                channelCounter = CH_3_INT;
             }
         }
         else if (channelCounter == CH_3_INT){
