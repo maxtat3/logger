@@ -8,33 +8,6 @@ import java.util.logging.Logger;
  */
 public class Controller implements ControllerCallback{
 
-    private static final String[] SAMPLES_PER_SECOND = {"60 выборок/с",
-            "30 выборок/с", //1[]
-            "5 выборок/с", //2[]
-
-            "30 выборок/с ", //1[*]
-            "10 выборок/с",
-            "5 выборок/с ", //2[*]
-
-            "20 выборок/с",
-            "5 выборок/с  ", //2[**]
-
-            "15 выборок/с",
-            "5 выборок/с   "}; //2[***]
-    private static final String[] CH1_60_SPS_NOTDELAY = {SAMPLES_PER_SECOND[0], "a"};
-    private static final String[] CH1_30_SPS_31_MS = {SAMPLES_PER_SECOND[1], "b"};
-    private static final String[] CH1_5_SPS_190_MS = {SAMPLES_PER_SECOND[2], "c"};
-
-    private static final String[] CH2_30_SPS_NOTDELAY = {SAMPLES_PER_SECOND[3], "d"};
-    private static final String[] CH2_10_SPS_50_MS = {SAMPLES_PER_SECOND[4], "e"};
-    private static final String[] CH2_5_SPS_100_MS = {SAMPLES_PER_SECOND[5], "f"};
-
-    private static final String[] CH3_20_SPS_NOTDELAY = {SAMPLES_PER_SECOND[6], "g"};
-    private static final String[] CH3_5_SPS_62_MS = {SAMPLES_PER_SECOND[7], "h"};
-
-    private static final String[] CH4_15_SPS_NOTDELAY = {SAMPLES_PER_SECOND[8], "k"};
-    private static final String[] CH4_5_SPS_45_MS = {SAMPLES_PER_SECOND[9], "l"};
-
     public static final String CHANNEL_1 = "1";
     public static final String CHANNEL_2 = "2";
     public static final String CHANNEL_3 = "3";
