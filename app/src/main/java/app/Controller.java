@@ -15,20 +15,31 @@ public class Controller implements ControllerCallback{
     public static final String CH_3_CMD = "3";
     public static final String CH_4_CMD = "4";
     // Numeric representation of channels
-    // All
     public static final int CH_1_INT = 1;
     public static final int CH_2_INT = 2;
     public static final int CH_3_INT = 3;
     public static final int CH_4_INT = 4;
 
+    /**
+     * Data model for communicate with device.
+     * Created in this class.
+     */
     private USART usart;
+
+    /**
+     * Callback for UI.
+     * Using it Controller must be send data to UI.
+     *
+     * @see DynamicData
+     * @see Controller
+     */
     private ViewCallback viewCallback;
 
     /**
      * Calculate what channel is active in each time measure moment.
      * When sending the request to get data from COM port, this counter
-     * is incremented value to 1 pointing to get data from next channel,
-     * but limited to the maximum numbers of channels {@link #maxCh}
+     * is incremented value to 1 pointing to get data from next channel.
+     * But limited to the maximum numbers of channels {@link #maxCh}
      * that user has selected.
      * Default value 1, this means is 1 channel number pointing.
      */
@@ -53,10 +64,14 @@ public class Controller implements ControllerCallback{
 
     /**
      * Result object created when user selected record to file.
+     *
      * @see #isRecord
      */
     private Result result = new Result();
 
+    /**
+     * Access to the channels and their samples per second.
+     */
     private Channel channel = new Channel();
 
 
@@ -65,6 +80,11 @@ public class Controller implements ControllerCallback{
         usart = new USART(this);
     }
 
+    /*
+     * -------------------------------------------
+     *      UI MUST BE CALLED NEXT PUBLIC METHODS
+     * -------------------------------------------
+     */
 
     /**
      * Turning on and do initialization USART module
