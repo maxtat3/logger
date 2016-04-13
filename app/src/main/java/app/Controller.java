@@ -10,15 +10,15 @@ public class Controller implements ControllerCallback{
 
     //todo - may be pack to inner class and moved to model. Think about it.
     // Commands channels selected to translate to COM port
-    public static final String CH_1_CMD = "1";
-    public static final String CH_2_CMD = "2";
-    public static final String CH_3_CMD = "3";
-    public static final String CH_4_CMD = "4";
+    public static final String CH_1_CMD = String.valueOf(Channel.Channels.ONE.getNumber());
+    public static final String CH_2_CMD = String.valueOf(Channel.Channels.TWO.getNumber());
+    public static final String CH_3_CMD = String.valueOf(Channel.Channels.THREE.getNumber());
+    public static final String CH_4_CMD = String.valueOf(Channel.Channels.FOUR.getNumber());
     // Numeric representation of channels
-    public static final int CH_1_INT = 1;
-    public static final int CH_2_INT = 2;
-    public static final int CH_3_INT = 3;
-    public static final int CH_4_INT = 4;
+    public static final int CH_1_INT = Channel.Channels.ONE.getNumber();
+    public static final int CH_2_INT = Channel.Channels.TWO.getNumber();
+    public static final int CH_3_INT = Channel.Channels.THREE.getNumber();
+    public static final int CH_4_INT = Channel.Channels.FOUR.getNumber();
 
     /**
      * Data model for communicate with device.
