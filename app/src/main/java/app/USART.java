@@ -8,7 +8,10 @@ import jssc.SerialPortException;
 /**
  * Receive and translate data and command to device from
  * Universal Synchronously Asynchronously Receiver Translator.
- * Represents RS232 interface.
+ * Represents RS232 interface. This data transmitted to controller
+ * and he update view elements.
+ *
+ * @see Controller
  */
 public class USART {
 
@@ -52,15 +55,12 @@ public class USART {
         }
     }
 
-    public void usartInit(String portName){
-        //Передаём в конструктор имя порта
+    public void init(String portName){
         serialPort = new SerialPort(portName);
         try {
-            //Открываем порт
             serialPort.openPort();
 //
             controllerCallback.setPortState(PortStates.OPEN);
-            //Выставляем параметры
             serialPort.setParams(SerialPort.BAUDRATE_9600,
                     SerialPort.DATABITS_8,
                     SerialPort.STOPBITS_1,
@@ -68,10 +68,7 @@ public class USART {
             //Включаем аппаратное управление потоком (для FT232 нжуно отключать)
 //            serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN |
 //                                          SerialPort.FLOWCONTROL_RTSCTS_OUT);
-            //Устанавливаем ивент лисенер и маску
             serialPort.addEventListener(new PortReader(), SerialPort.MASK_RXCHAR);
-            //Отправляем запрос устройству
-//            serialPort.writeString("1"); //начинаем с канала 1
         }
         catch (SerialPortException ex) {
             ex.printStackTrace();

@@ -4,7 +4,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * Associates view and model.
+ * When user change view state this controller update model.
+ * When in model change data , he is update controller and he
+ * update view elements.
  *
+ * @see DynamicData
+ * @see USART
  */
 public class Controller implements ControllerCallback{
 
@@ -24,7 +30,7 @@ public class Controller implements ControllerCallback{
      * Data model for communicate with device.
      * Created in this class.
      */
-    private USART usart;
+    private USART usart; //may be reorganize variables
 
     /**
      * Callback for UI.
@@ -90,7 +96,7 @@ public class Controller implements ControllerCallback{
      * Turning on and do initialization USART module
      */
     public void turnOnUSART(String portName) { //todo - may be set return boolean result !?
-        usart.usartInit(portName);
+        usart.init(portName);
     }
 
 
@@ -104,7 +110,7 @@ public class Controller implements ControllerCallback{
 
     /**
      * Close COM port
-     * @return true - is COM port closed // todo is port closed , really returned true result  ?????
+     * @return true - is COM port closed
      */
     public boolean closeUSARTPort() {
         return usart.close();
@@ -112,7 +118,7 @@ public class Controller implements ControllerCallback{
 
     /**
      * Send text to opened COM port.
-     * @param text transmitted to port as String //todo подумать как правиально сформулировать !
+     * @param text transmitted to open COM port text as String
      */
     public void sendString(String text) {
         usart.writeString(text);
@@ -150,7 +156,7 @@ public class Controller implements ControllerCallback{
     /**
      * Start or stop record measured channels data to file
      */
-    public void doRecord() {
+    public void doRecord() { //todo simplify
         if (isRecord) {
             isRecord = false;
         } else{
@@ -170,7 +176,7 @@ public class Controller implements ControllerCallback{
      */
     public String[] setChannelsNum(int channels) throws LargeChannelsSetupException {
         switch (channels) {
-            case 0:
+            case 0: //todo change to channels const
                 maxCh = CH_1_INT;
                 return new String[]{
                         channel.getCh1And60sps().getSpsName(),
@@ -205,7 +211,19 @@ public class Controller implements ControllerCallback{
         }
     }
 
-    public void setMCUSamplesPerSecond(String chooseValSps){
+    /**
+     * Set samples per second for measure (sps) process.
+     * Call this method closely related to {@link #setChannelsNum(int)} method.
+     * When called setChannelsNum method, he are returned available variants
+     * sample per seconds. For example fill checkbox. And the results are
+     * transmitted in this method , which sends command to device.
+     * This method must be called in UI.
+     *
+     * @param chooseValSps user selected sps value in UI
+     *
+     * @see #setChannelsNum(int)
+     */
+    public void setMCUSamplesPerSecond(String chooseValSps){//todo  "s" move to class
         try {
             sendString("s");    //спец символ - установка mcu в режим выбора типа задержки
             Thread.sleep(100);
@@ -258,6 +276,12 @@ public class Controller implements ControllerCallback{
             sendNextChannelRequest(); // So send request to get data next channel
         }
     }
+
+    /*
+     * --------------------
+     *   PRIVATE METHODS
+     * --------------------
+     */
 
     /**
      * Distributed of ADC data between channels.
