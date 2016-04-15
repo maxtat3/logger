@@ -127,7 +127,6 @@ public class DynamicData extends ApplicationFrame implements ViewCallback{
 		series4.add(new Millisecond(), channel4Point);
 	}
 
-//todo добавить bool isOpenPort. Эта переменная может применятся для блокировки UI если нет подключения к порту
 
 	/**
 	 * Main panel contained chart and directions panels
