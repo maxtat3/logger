@@ -177,8 +177,7 @@ public class DynamicData extends ApplicationFrame implements ViewCallback{
 				@Override
 				public void itemStateChanged(ItemEvent e) {
 					if(controller.isOpenUSARTPort()){
-                        controller.closeUSARTPort();
-                        // todo - may be set delay
+                        controller.closeUSARTPort(); // may be set delay
 						controller.turnOnUSART(comboBox_chooserCOMPort.getSelectedItem().toString());
 					}else{
 						controller.turnOnUSART(comboBox_chooserCOMPort.getSelectedItem().toString());

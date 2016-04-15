@@ -17,6 +17,13 @@ public class USART {
 
     private SerialPort serialPort;
 
+    /**
+     * Callback for Controller.
+     * Using it callback, model must be send data to Controller.
+     *
+     * @see Controller
+     * @see USART
+     */
     private ControllerCallback controllerCallback;
 
 
@@ -34,10 +41,20 @@ public class USART {
     }
 
 
+    /**
+     * Checked COM port is open ?
+     *
+     * @return true if port open
+     */
     public boolean isOpen() {
         return serialPort.isOpened();
     }
 
+    /**
+     * Do close open COM port.
+     *
+     * @return true if port normally closed
+     */
     public boolean close() {
         try {
             return serialPort.closePort();
@@ -47,6 +64,11 @@ public class USART {
         return false;
     }
 
+    /**
+     * Write String to opened COM port
+     *
+     * @param str String writes to port
+     */
     public void writeString(String str) {
         try {
             serialPort.writeString(str);
@@ -55,6 +77,11 @@ public class USART {
         }
     }
 
+    /**
+     * Init and open COM port
+     *
+     * @param portName opened port name
+     */
     public void init(String portName){
         serialPort = new SerialPort(portName);
         try {
@@ -77,7 +104,6 @@ public class USART {
         }
     }
 
-    int sc = 0;
     private class PortReader implements SerialPortEventListener {
         @Override
         public void serialEvent(SerialPortEvent event) {

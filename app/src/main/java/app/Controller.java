@@ -14,7 +14,6 @@ import java.util.logging.Logger;
  */
 public class Controller implements ControllerCallback{
 
-    //todo - may be pack to inner class and moved to model. Think about it.
     // Commands channels selected to translate to COM port
     public static final String CH_1_CMD = String.valueOf(Channel.Channels.ONE.getNumber());
     public static final String CH_2_CMD = String.valueOf(Channel.Channels.TWO.getNumber());
@@ -34,7 +33,7 @@ public class Controller implements ControllerCallback{
 
     /**
      * Callback for UI.
-     * Using it Controller must be send data to UI.
+     * Using it callback, Controller must be send data to UI.
      *
      * @see DynamicData
      * @see Controller

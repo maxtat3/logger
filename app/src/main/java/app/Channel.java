@@ -3,7 +3,7 @@ package app;
 /**
  * Channels and their samples per second.
  */
-public class Channel { //todo - worked with comments methods and variables this in class
+public class Channel {
     // Variables only for channel 1
     private final SpsItem ch1And60sps;
     private final SpsItem ch1And30sps;
