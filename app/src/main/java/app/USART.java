@@ -15,6 +15,13 @@ import jssc.SerialPortException;
  */
 public class USART {
 
+    public static final String[] NUMBERS_OF_COM_PORTS = {
+            "COM1","COM2","COM3","COM4","COM5","COM6","COM7","COM8",
+            "COM9","COM10","COM11","COM12","COM13","COM14","COM15","COM16",
+            "/dev/ttyUSB0", "/dev/ttyUSB1", "/dev/ttyUSB2", "/dev/ttyUSB3",
+            "/dev/ttyACM0", "/dev/ttyACM1", "/dev/ttyACM2", "/dev/ttyACM3",
+    };
+
     private SerialPort serialPort;
 
     /**

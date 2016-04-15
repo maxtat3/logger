@@ -24,13 +24,12 @@ public class View extends ApplicationFrame implements ViewCallback{
 
 	public static final String PORT_CLOSE_TXT = "   Порт занят/закрыт ";
 	public static final String PORT_OPEN_TXT = "   Порт открыт ";
-	public static final String[] NUMBERS_OF_COM_PORTS = {
-            "COM1","COM2","COM3","COM4","COM5","COM6","COM7","COM8",
-            "COM9","COM10","COM11","COM12","COM13","COM14","COM15","COM16",
-            "/dev/ttyUSB0", "/dev/ttyUSB1", "/dev/ttyUSB2", "/dev/ttyUSB3",
-            "/dev/ttyACM0", "/dev/ttyACM1", "/dev/ttyACM2", "/dev/ttyACM3",
-    };
-	private static final String[] TOTAL_CHANNELS = {"1 канал", "2 канала", "3 канала", "4 канала"};
+	private static final String[] CHANNELS_NAMES = {
+			Channel.Channels.ONE.getName(),
+			Channel.Channels.TWO.getName(),
+			Channel.Channels.THREE.getName(),
+			Channel.Channels.FOUR.getName()
+	};
 	private static final String CHANNEL_1_TITLE_TXT = "ADC data 1";
 	private static final String CHANNEL_2_TITLE_TXT = "ADC data 2";
 	private static final String CHANNEL_3_TITLE_TXT = "ADC data 3";
@@ -63,7 +62,7 @@ public class View extends ApplicationFrame implements ViewCallback{
         MainPanel mainPanel = new MainPanel();
         setContentPane(mainPanel);
         controller = new Controller(this);
-        controller.turnOnUSART(NUMBERS_OF_COM_PORTS[16]);
+        controller.turnOnUSART(USART.NUMBERS_OF_COM_PORTS[16]);
     }
 
 	/**
@@ -93,7 +92,7 @@ public class View extends ApplicationFrame implements ViewCallback{
 			Checkbox chbRecord = new Checkbox();
 			final JButton btnStartProcess = new JButton(START_STOP_TXT);
 
-			cmbCOMPortNumber.setModel(new javax.swing.DefaultComboBoxModel<String>(NUMBERS_OF_COM_PORTS));
+			cmbCOMPortNumber.setModel(new javax.swing.DefaultComboBoxModel<String>(USART.NUMBERS_OF_COM_PORTS));
 			cmbCOMPortNumber.setSelectedIndex(9);
 			cmbCOMPortNumber.addItemListener(new ItemListener() {
 				@Override
@@ -107,7 +106,7 @@ public class View extends ApplicationFrame implements ViewCallback{
 				}
 			});
 
-			cmbNumberOfChannels.setModel(new javax.swing.DefaultComboBoxModel<String>(TOTAL_CHANNELS));
+			cmbNumberOfChannels.setModel(new javax.swing.DefaultComboBoxModel<String>(CHANNELS_NAMES));
 			cmbNumberOfChannels.setSelectedIndex(cmbNumberOfChannels.getItemCount() - 1);
 			cmbNumberOfChannels.addItemListener(new ItemListener() {
 				@Override
