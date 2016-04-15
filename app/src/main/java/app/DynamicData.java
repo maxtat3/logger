@@ -22,9 +22,9 @@ import java.awt.event.ItemListener;
 
 public class DynamicData extends ApplicationFrame implements ViewCallback{
 
-	public static final  String PORT_CLOSE_TXT = "   Порт занят/закрыт ";
-	public static final  String PORT_OPEN_TXT = "   Порт открыт ";
-	public static final  String[] NUMBERS_OF_COM_PORTS = {
+	public static final String PORT_CLOSE_TXT = "   Порт занят/закрыт ";
+	public static final String PORT_OPEN_TXT = "   Порт открыт ";
+	public static final String[] NUMBERS_OF_COM_PORTS = {
             "COM1","COM2","COM3","COM4","COM5","COM6","COM7","COM8",
             "COM9","COM10","COM11","COM12","COM13","COM14","COM15","COM16",
             "/dev/ttyUSB0", "/dev/ttyUSB1", "/dev/ttyUSB2", "/dev/ttyUSB3",
@@ -43,44 +43,26 @@ public class DynamicData extends ApplicationFrame implements ViewCallback{
 	private static final double MIN_AXIS_VALUE = 0D;
 	private static final double MAX_AXIS_VALUE = 255D;
 
-	//    private static final String[] SAMPLES_PER_SECOND = {"60 выборок/с", "30 выборок/с", "20 выборок/с", "15 выборок/с", "10 выборок/с", "5 выборок/с"};
-
-
 	private TimeSeries series1;
 	private TimeSeries series2;
 	private TimeSeries series3;
 	private TimeSeries series4;
 
-
 	public Label lbPortState;
-
-
-
-
-
-
-
-
-
-
-
-
     static Class class$org$jfree$data$time$Millisecond; /* synthetic field */
-
     private Controller controller;
 
 
 	/**
 	 * Create application main window.
 	 *
-	 * @param s title main window, placed in top
+	 * @param title title main window, placed in top
      */
-    public DynamicData (String s){
-        super(s);
+    public DynamicData (String title){
+        super(title);
         MainPanel mainPanel = new MainPanel();
         setContentPane(mainPanel);
         controller = new Controller(this);
-        //init USART
         controller.turnOnUSART(NUMBERS_OF_COM_PORTS[16]);
     }
 
@@ -101,7 +83,6 @@ public class DynamicData extends ApplicationFrame implements ViewCallback{
             lbPortState.setForeground(new Color(50, 205, 50));
 
         } else if (portStates == USART.PortStates.CLOSE) {
-            System.out.println("port close");
             lbPortState.setText(PORT_CLOSE_TXT);
             lbPortState.setForeground(Color.red);
         }
@@ -225,7 +206,7 @@ public class DynamicData extends ApplicationFrame implements ViewCallback{
 			dirPanel.add(btnStartProcess);
 
 			add(chartpanel);
-			add(dirPanel, "South");
+			add(dirPanel, BorderLayout.SOUTH);
 		}
 
 		/**
