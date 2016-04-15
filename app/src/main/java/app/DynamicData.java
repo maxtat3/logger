@@ -199,8 +199,8 @@ public class DynamicData extends ApplicationFrame implements ViewCallback{
 			dirPanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 
 			dirPanel.add(cmbCOMPortNumber);
-			dirPanel.add(cmbSpsSelector);
 			dirPanel.add(cmbNumberOfChannels);
+			dirPanel.add(cmbSpsSelector);
 			dirPanel.add(lbPortState);
 			dirPanel.add(chbRecord);
 			dirPanel.add(btnStartProcess);
