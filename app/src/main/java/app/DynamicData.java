@@ -22,8 +22,8 @@ import java.awt.event.ItemListener;
 
 public class DynamicData extends ApplicationFrame implements ViewCallback{
 
-	public static final  String PORT_CLOSE = "   Порт занят/закрыт ";
-	public static final  String PORT_OPEN = "   Порт открыт ";
+	public static final  String PORT_CLOSE_TXT = "   Порт занят/закрыт ";
+	public static final  String PORT_OPEN_TXT = "   Порт открыт ";
 	public static final  String[] NUMBERS_OF_COM_PORTS = {
             "COM1","COM2","COM3","COM4","COM5","COM6","COM7","COM8",
             "COM9","COM10","COM11","COM12","COM13","COM14","COM15","COM16",
@@ -31,16 +31,15 @@ public class DynamicData extends ApplicationFrame implements ViewCallback{
             "/dev/ttyACM0", "/dev/ttyACM1", "/dev/ttyACM2", "/dev/ttyACM3",
     };
 	private static final String[] TOTAL_CHANNELS = {"1 канал", "2 канала", "3 канала", "4 канала"};
-	public static final  String START_STOP_MEASURE = "obj.DynamicData.START_STOP_MEASURE";
-	private static final String ADC_1_DATA = "ADC data 1";
-	private static final String ADC_2_DATA = "ADC data 2";
-	private static final String ADC_3_DATA = "ADC data 3";
-	private static final String ADC_4_DATA = "ADC data 4";
-	private static final String BTN_START_STOP = "Старт/стоп";
-	private static final String CHECKBOX_RECORD = "Запись ";
-	private static final String TITLE_CHART = "Осциллограф - самописец";
-	private static final String AXIS_X_NAME = "Время";
-	private static final String AXIS_Y_NAME = "Значение";
+	private static final String CHANNEL_1_TITLE_TXT = "ADC data 1";
+	private static final String CHANNEL_2_TITLE_TXT = "ADC data 2";
+	private static final String CHANNEL_3_TITLE_TXT = "ADC data 3";
+	private static final String CHANNEL_4_TITLE_TXT = "ADC data 4";
+	private static final String START_STOP_TXT = "Старт/стоп";
+	private static final String RECORD_TXT = "Запись ";
+	private static final String TITLE_CHART_TXT = "Осциллограф - самописец";
+	private static final String AXIS_X_NAME_TXT = "Время";
+	private static final String AXIS_Y_NAME_TXT = "Значение";
 	private static final double MIN_AXIS_VALUE = 0D;
 	private static final double MAX_AXIS_VALUE = 255D;
 
@@ -53,10 +52,10 @@ public class DynamicData extends ApplicationFrame implements ViewCallback{
 	private TimeSeries series4;
 
 
-	public Label label_portState;
-	public JComboBox comboBox_chooserCOMPort = new JComboBox();
-	public JComboBox comboBox_chooserSamplesPerSecond = new JComboBox();
-	public JComboBox comboBox_chooserChaneels = new JComboBox();
+	public Label lbPortState;
+	public JComboBox cmbCOMPortNumber = new JComboBox();
+	public JComboBox cmbSpsSelector = new JComboBox();
+	public JComboBox cmbNumberOfChannels = new JComboBox();
 
 
 
@@ -74,8 +73,8 @@ public class DynamicData extends ApplicationFrame implements ViewCallback{
 
     public DynamicData (String s){
         super(s);
-        DemoPanel demopanel = new DemoPanel();
-        setContentPane(demopanel);
+        MainPanel mainPanel = new MainPanel();
+        setContentPane(mainPanel);
         controller = new Controller(this);
         //init USART
         controller.turnOnUSART(NUMBERS_OF_COM_PORTS[16]);
@@ -94,13 +93,13 @@ public class DynamicData extends ApplicationFrame implements ViewCallback{
     @Override
     public void setPortState(USART.PortStates portStates) {
         if (portStates == USART.PortStates.OPEN) {
-            label_portState.setText(PORT_OPEN);
-            label_portState.setForeground(new Color(50, 205, 50));
+            lbPortState.setText(PORT_OPEN_TXT);
+            lbPortState.setForeground(new Color(50, 205, 50));
 
         } else if (portStates == USART.PortStates.CLOSE) {
             System.out.println("port close");
-            label_portState.setText(PORT_CLOSE);
-            label_portState.setForeground(Color.red);
+            lbPortState.setText(PORT_CLOSE_TXT);
+            lbPortState.setForeground(Color.red);
         }
     }
 
@@ -126,115 +125,110 @@ public class DynamicData extends ApplicationFrame implements ViewCallback{
 
 //todo добавить bool isOpenPort. Эта переменная может применятся для блокировки UI если нет подключения к порту
 
-    class DemoPanel extends JPanel implements ActionListener{
-		public DemoPanel(){
+    class MainPanel extends JPanel {
+		public MainPanel(){
 			super(new BorderLayout());
-			series1 = new TimeSeries(ADC_1_DATA, DynamicData.class$org$jfree$data$time$Millisecond != null ? DynamicData.class$org$jfree$data$time$Millisecond : (DynamicData.class$org$jfree$data$time$Millisecond = DynamicData.class$("org.jfree.data.time.Millisecond")));
-			series2 = new TimeSeries(ADC_2_DATA, DynamicData.class$org$jfree$data$time$Millisecond != null ? DynamicData.class$org$jfree$data$time$Millisecond : (DynamicData.class$org$jfree$data$time$Millisecond = DynamicData.class$("org.jfree.data.time.Millisecond")));
-			series3 = new TimeSeries(ADC_3_DATA, DynamicData.class$org$jfree$data$time$Millisecond != null ? DynamicData.class$org$jfree$data$time$Millisecond : (DynamicData.class$org$jfree$data$time$Millisecond = DynamicData.class$("org.jfree.data.time.Millisecond")));
-			series4 = new TimeSeries(ADC_4_DATA, DynamicData.class$org$jfree$data$time$Millisecond != null ? DynamicData.class$org$jfree$data$time$Millisecond : (DynamicData.class$org$jfree$data$time$Millisecond = DynamicData.class$("org.jfree.data.time.Millisecond")));
+			series1 = new TimeSeries(CHANNEL_1_TITLE_TXT, DynamicData.class$org$jfree$data$time$Millisecond != null ? DynamicData.class$org$jfree$data$time$Millisecond : (DynamicData.class$org$jfree$data$time$Millisecond = DynamicData.class$("org.jfree.data.time.Millisecond")));
+			series2 = new TimeSeries(CHANNEL_2_TITLE_TXT, DynamicData.class$org$jfree$data$time$Millisecond != null ? DynamicData.class$org$jfree$data$time$Millisecond : (DynamicData.class$org$jfree$data$time$Millisecond = DynamicData.class$("org.jfree.data.time.Millisecond")));
+			series3 = new TimeSeries(CHANNEL_3_TITLE_TXT, DynamicData.class$org$jfree$data$time$Millisecond != null ? DynamicData.class$org$jfree$data$time$Millisecond : (DynamicData.class$org$jfree$data$time$Millisecond = DynamicData.class$("org.jfree.data.time.Millisecond")));
+			series4 = new TimeSeries(CHANNEL_4_TITLE_TXT, DynamicData.class$org$jfree$data$time$Millisecond != null ? DynamicData.class$org$jfree$data$time$Millisecond : (DynamicData.class$org$jfree$data$time$Millisecond = DynamicData.class$("org.jfree.data.time.Millisecond")));
 
-			TimeSeriesCollection timeseriescollection1 = new TimeSeriesCollection(series1);
-			TimeSeriesCollection timeseriescollection2 = new TimeSeriesCollection(series2);
-			TimeSeriesCollection timeseriescollection3 = new TimeSeriesCollection(series3);
-			TimeSeriesCollection timeseriescollection4 = new TimeSeriesCollection(series4);
+			TimeSeriesCollection tsc1 = new TimeSeriesCollection(series1);
+			TimeSeriesCollection tsc2 = new TimeSeriesCollection(series2);
+			TimeSeriesCollection tsc3 = new TimeSeriesCollection(series3);
+			TimeSeriesCollection tsc4 = new TimeSeriesCollection(series4);
 
-			ChartPanel chartpanel = new ChartPanel(createChart(timeseriescollection1, timeseriescollection2, timeseriescollection3, timeseriescollection4));
+			ChartPanel chartpanel = new ChartPanel(createChart(tsc1, tsc2, tsc3, tsc4));
 			chartpanel.setPreferredSize(new Dimension(900, 500));
 
-			// добавляем панель
-			JPanel jpanel = new JPanel();
-			jpanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+			// Add panel which placed direction elements
+			JPanel dirPanel = new JPanel();
+			dirPanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 
-			// создаем  управляющие элементы ...
-			//кнопка - старт/стоп
-			JButton btn_startStop = new JButton(BTN_START_STOP);
-			btn_startStop.setActionCommand(START_STOP_MEASURE);
-			btn_startStop.addActionListener(this);
+			// Start/stop measure process button
+			JButton btnStartProcess = new JButton(START_STOP_TXT);
+			btnStartProcess.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					controller.doStartStopMsr();
+				}
+			});
 
-			//переключатель - запись?
-			Checkbox checkbox_record = new Checkbox(CHECKBOX_RECORD);
-			checkbox_record.setFont(new Font("tahoma", Font.BOLD, 18));
-			checkbox_record.setState(false); // record not set by default
-			checkbox_record.addItemListener(new ItemListener() {
+			// Record switcher
+			Checkbox chbRecord = new Checkbox(RECORD_TXT);
+			chbRecord.setFont(new Font("tahoma", Font.BOLD, 18));
+			chbRecord.setState(false); // record not set by default
+			chbRecord.addItemListener(new ItemListener() {
 				@Override
 				public void itemStateChanged(ItemEvent e) {
 
 				}
 			});
 
-			//надпись для вывода текста - информация о состоянии COM порта
-			label_portState = new Label(PORT_CLOSE);
-			label_portState.setFont(new Font("tahoma", Font.BOLD, 18));
+			// COM Port inform state label
+			lbPortState = new Label(PORT_CLOSE_TXT);
+			lbPortState.setFont(new Font("tahoma", Font.BOLD, 18));
 
-			//раскрывающейся список - выбор COM порта
-			comboBox_chooserCOMPort.setModel(new javax.swing.DefaultComboBoxModel(NUMBERS_OF_COM_PORTS));
-			comboBox_chooserCOMPort.setSelectedIndex(9);
-			comboBox_chooserCOMPort.addItemListener(new ItemListener() {
+			// COM Port chooser
+			cmbCOMPortNumber.setModel(new javax.swing.DefaultComboBoxModel(NUMBERS_OF_COM_PORTS));
+			cmbCOMPortNumber.setSelectedIndex(9);
+			cmbCOMPortNumber.addItemListener(new ItemListener() {
 				@Override
 				public void itemStateChanged(ItemEvent e) {
 					if(controller.isOpenUSARTPort()){
                         controller.closeUSARTPort(); // may be set delay
-						controller.turnOnUSART(comboBox_chooserCOMPort.getSelectedItem().toString());
+						controller.turnOnUSART(cmbCOMPortNumber.getSelectedItem().toString());
 					}else{
-						controller.turnOnUSART(comboBox_chooserCOMPort.getSelectedItem().toString());
+						controller.turnOnUSART(cmbCOMPortNumber.getSelectedItem().toString());
 					}
 				}
 			});
 
-			//----------------------------------------------------------------
-			//раскрывающейся список - выбор количества каналов
-			//----------------------------------------------------------------
-			comboBox_chooserChaneels.setModel(new javax.swing.DefaultComboBoxModel(TOTAL_CHANNELS));
-			comboBox_chooserChaneels.setSelectedIndex(comboBox_chooserChaneels.getItemCount() - 1);
-			comboBox_chooserChaneels.addItemListener(new ItemListener() {
+			// Number of channels select
+			cmbNumberOfChannels.setModel(new javax.swing.DefaultComboBoxModel(TOTAL_CHANNELS));
+			cmbNumberOfChannels.setSelectedIndex(cmbNumberOfChannels.getItemCount() - 1);
+			cmbNumberOfChannels.addItemListener(new ItemListener() {
 				@Override
 				public void itemStateChanged(ItemEvent e) {
 					String[] availableSPS = new String[0];
 					try {
-						availableSPS = controller.setChannelsNum(comboBox_chooserChaneels.getSelectedIndex());
+						availableSPS = controller.setChannelsNum(cmbNumberOfChannels.getSelectedIndex());
 					} catch (LargeChannelsSetupException e1) {
 						e1.printStackTrace();
 					}
-					comboBox_chooserSamplesPerSecond.setModel(new javax.swing.DefaultComboBoxModel(availableSPS));
+					cmbSpsSelector.setModel(new javax.swing.DefaultComboBoxModel(availableSPS));
                 }
 			});
 
-			//----------------------------------------------------------------
-			//раскрывающейся список - выбор задержки между измерениями
-			//т.е. количества выборок в секунду
-			//----------------------------------------------------------------
-//	    comboBox_chooserSamplesPerSecond.setModel(new javax.swing.DefaultComboBoxModel(SAMPLES_PER_SECOND));
-//			setChoosesValuesSamplesPerSecond(comboBox_chooserChaneels.getSelectedIndex());
-			comboBox_chooserSamplesPerSecond.setSelectedItem(0);
-			comboBox_chooserSamplesPerSecond.addItemListener(new ItemListener() {
+			// Samples per seconds (sps) select for user choice channels
+			// Each combination "number of channels : sps" determine command sending to device  
+			cmbSpsSelector.setSelectedItem(0);
+			cmbSpsSelector.addItemListener(new ItemListener() {
 				@Override
 				public void itemStateChanged(ItemEvent e) {
-					controller.setMCUSamplesPerSecond((String)comboBox_chooserSamplesPerSecond.getSelectedItem());
-//        		    System.out.println("sel item =      " + (String)comboBox_chooserSamplesPerSecond.getSelectedItem());
-//        		    System.out.println("-----------");
+					controller.setMCUSamplesPerSecond((String) cmbSpsSelector.getSelectedItem());
 				}
 			});
 
-            comboBox_chooserChaneels.setSelectedItem(0);
-            comboBox_chooserSamplesPerSecond.setSelectedItem(0);
+            cmbNumberOfChannels.setSelectedItem(0);
+            cmbSpsSelector.setSelectedItem(0);
 
-			jpanel.add(comboBox_chooserCOMPort);
-			jpanel.add(comboBox_chooserSamplesPerSecond);
-			jpanel.add(comboBox_chooserChaneels);
-			jpanel.add(label_portState);
-			jpanel.add(checkbox_record);
-			jpanel.add(btn_startStop);
+			dirPanel.add(cmbCOMPortNumber);
+			dirPanel.add(cmbSpsSelector);
+			dirPanel.add(cmbNumberOfChannels);
+			dirPanel.add(lbPortState);
+			dirPanel.add(chbRecord);
+			dirPanel.add(btnStartProcess);
 
 			add(chartpanel);
-			add(jpanel, "South");
+			add(dirPanel, "South");
 		}
 
 		private JFreeChart createChart(XYDataset xyCh1, XYDataset xyCh2, XYDataset xyCh3, XYDataset xyCh4){
 			JFreeChart jfreechart = ChartFactory.createTimeSeriesChart(
-					TITLE_CHART,
-					AXIS_X_NAME,
-					AXIS_Y_NAME,
+					TITLE_CHART_TXT,
+					AXIS_X_NAME_TXT,
+					AXIS_Y_NAME_TXT,
 					xyCh1,
 					true,
 					true,
@@ -256,13 +250,6 @@ public class DynamicData extends ApplicationFrame implements ViewCallback{
 			va = xyplot.getRangeAxis();
 			va.setRange(MIN_AXIS_VALUE, MAX_AXIS_VALUE);
 			return jfreechart;
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent actionevent){
-			if (actionevent.getActionCommand().equals(START_STOP_MEASURE)){
-                controller.doStartStopMsr();
-			}
 		}
 
 	}
