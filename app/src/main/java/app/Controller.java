@@ -155,12 +155,8 @@ public class Controller implements ControllerCallback{
     /**
      * Start or stop record measured channels data to file
      */
-    public void doRecord() { //todo simplify
-        if (isRecord) {
-            isRecord = false;
-        } else{
-            isRecord = true;
-        }
+    public void doRecord() {
+        isRecord = !isRecord;
     }
 
     /**
