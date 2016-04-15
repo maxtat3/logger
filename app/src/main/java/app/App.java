@@ -8,7 +8,7 @@ public class App {
 
 
 	public static void main(String[] args) {
-		DynamicData dynamicChart = new DynamicData("Самописец");
+		View dynamicChart = new View("Самописец");
 //		dynamicChart.setMCUSamplesPerSecond("15 выборок/с");
 //		dynamicChart.setChoosesValuesSamplesPerSecond(4);
 		dynamicChart.pack();

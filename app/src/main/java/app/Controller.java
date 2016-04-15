@@ -9,7 +9,7 @@ import java.util.logging.Logger;
  * When in model change data , he is update controller and he
  * update view elements.
  *
- * @see DynamicData
+ * @see View
  * @see USART
  */
 public class Controller implements ControllerCallback{
@@ -35,7 +35,7 @@ public class Controller implements ControllerCallback{
      * Callback for UI.
      * Using it callback, Controller must be send data to UI.
      *
-     * @see DynamicData
+     * @see View
      * @see Controller
      */
     private ViewCallback viewCallback;
@@ -253,7 +253,7 @@ public class Controller implements ControllerCallback{
             }
 
         }catch (InterruptedException ex) {
-            Logger.getLogger(DynamicData.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

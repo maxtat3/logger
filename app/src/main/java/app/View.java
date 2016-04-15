@@ -20,7 +20,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 
-public class DynamicData extends ApplicationFrame implements ViewCallback{
+public class View extends ApplicationFrame implements ViewCallback{
 
 	public static final String PORT_CLOSE_TXT = "   Порт занят/закрыт ";
 	public static final String PORT_OPEN_TXT = "   Порт открыт ";
@@ -58,7 +58,7 @@ public class DynamicData extends ApplicationFrame implements ViewCallback{
 	 *
 	 * @param title title main window, placed in top
      */
-    public DynamicData (String title){
+    public View(String title){
         super(title);
         MainPanel mainPanel = new MainPanel();
         setContentPane(mainPanel);
@@ -72,10 +72,10 @@ public class DynamicData extends ApplicationFrame implements ViewCallback{
 	class MainPanel extends JPanel {
 		public MainPanel(){
 			super(new BorderLayout());
-			series1 = new TimeSeries(CHANNEL_1_TITLE_TXT, DynamicData.class$org$jfree$data$time$Millisecond != null ? DynamicData.class$org$jfree$data$time$Millisecond : (DynamicData.class$org$jfree$data$time$Millisecond = DynamicData.class$("org.jfree.data.time.Millisecond")));
-			series2 = new TimeSeries(CHANNEL_2_TITLE_TXT, DynamicData.class$org$jfree$data$time$Millisecond != null ? DynamicData.class$org$jfree$data$time$Millisecond : (DynamicData.class$org$jfree$data$time$Millisecond = DynamicData.class$("org.jfree.data.time.Millisecond")));
-			series3 = new TimeSeries(CHANNEL_3_TITLE_TXT, DynamicData.class$org$jfree$data$time$Millisecond != null ? DynamicData.class$org$jfree$data$time$Millisecond : (DynamicData.class$org$jfree$data$time$Millisecond = DynamicData.class$("org.jfree.data.time.Millisecond")));
-			series4 = new TimeSeries(CHANNEL_4_TITLE_TXT, DynamicData.class$org$jfree$data$time$Millisecond != null ? DynamicData.class$org$jfree$data$time$Millisecond : (DynamicData.class$org$jfree$data$time$Millisecond = DynamicData.class$("org.jfree.data.time.Millisecond")));
+			series1 = new TimeSeries(CHANNEL_1_TITLE_TXT, View.class$org$jfree$data$time$Millisecond != null ? View.class$org$jfree$data$time$Millisecond : (View.class$org$jfree$data$time$Millisecond = View.class$("org.jfree.data.time.Millisecond")));
+			series2 = new TimeSeries(CHANNEL_2_TITLE_TXT, View.class$org$jfree$data$time$Millisecond != null ? View.class$org$jfree$data$time$Millisecond : (View.class$org$jfree$data$time$Millisecond = View.class$("org.jfree.data.time.Millisecond")));
+			series3 = new TimeSeries(CHANNEL_3_TITLE_TXT, View.class$org$jfree$data$time$Millisecond != null ? View.class$org$jfree$data$time$Millisecond : (View.class$org$jfree$data$time$Millisecond = View.class$("org.jfree.data.time.Millisecond")));
+			series4 = new TimeSeries(CHANNEL_4_TITLE_TXT, View.class$org$jfree$data$time$Millisecond != null ? View.class$org$jfree$data$time$Millisecond : (View.class$org$jfree$data$time$Millisecond = View.class$("org.jfree.data.time.Millisecond")));
 
 			TimeSeriesCollection tsc1 = new TimeSeriesCollection(series1);
 			TimeSeriesCollection tsc2 = new TimeSeriesCollection(series2);

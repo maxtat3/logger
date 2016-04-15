@@ -4,7 +4,7 @@ package app;
  * What will be translated: controller -> UI
  * UI musts be implemented this interface
  *
- * @see DynamicData
+ * @see View
  * @see Controller
  */
 public interface ViewCallback {
