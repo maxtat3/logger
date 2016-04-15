@@ -53,9 +53,9 @@ public class DynamicData extends ApplicationFrame implements ViewCallback{
 
 
 	public Label lbPortState;
-	public JComboBox<String> cmbCOMPortNumber = new JComboBox<String>();
-	public JComboBox<String> cmbSpsSelector = new JComboBox<String>();
-	public JComboBox<String> cmbNumberOfChannels = new JComboBox<String>();
+
+
+
 
 
 
@@ -147,35 +147,14 @@ public class DynamicData extends ApplicationFrame implements ViewCallback{
 			ChartPanel chartpanel = new ChartPanel(createChart(tsc1, tsc2, tsc3, tsc4));
 			chartpanel.setPreferredSize(new Dimension(900, 500));
 
-			// Add panel which placed direction elements
-			JPanel dirPanel = new JPanel();
-			dirPanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+			// Init view components
+			final JComboBox<String> cmbCOMPortNumber = new JComboBox<String>();
+			final JComboBox<String> cmbNumberOfChannels = new JComboBox<String>();
+			final JComboBox<String> cmbSpsSelector = new JComboBox<String>();
+			lbPortState = new Label();
+			Checkbox chbRecord = new Checkbox();
+			final JButton btnStartProcess = new JButton(START_STOP_TXT);
 
-			// Start/stop measure process button
-			JButton btnStartProcess = new JButton(START_STOP_TXT);
-			btnStartProcess.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					controller.doStartStopMsr();
-				}
-			});
-
-			// Record switcher
-			Checkbox chbRecord = new Checkbox(RECORD_TXT);
-			chbRecord.setFont(new Font("tahoma", Font.BOLD, 18));
-			chbRecord.setState(false); // record not set by default
-			chbRecord.addItemListener(new ItemListener() {
-				@Override
-				public void itemStateChanged(ItemEvent e) {
-
-				}
-			});
-
-			// COM Port inform state label
-			lbPortState = new Label(PORT_CLOSE_TXT);
-			lbPortState.setFont(new Font("tahoma", Font.BOLD, 18));
-
-			// COM Port chooser
 			cmbCOMPortNumber.setModel(new javax.swing.DefaultComboBoxModel<String>(NUMBERS_OF_COM_PORTS));
 			cmbCOMPortNumber.setSelectedIndex(9);
 			cmbCOMPortNumber.addItemListener(new ItemListener() {
@@ -190,7 +169,6 @@ public class DynamicData extends ApplicationFrame implements ViewCallback{
 				}
 			});
 
-			// Number of channels select
 			cmbNumberOfChannels.setModel(new javax.swing.DefaultComboBoxModel<String>(TOTAL_CHANNELS));
 			cmbNumberOfChannels.setSelectedIndex(cmbNumberOfChannels.getItemCount() - 1);
 			cmbNumberOfChannels.addItemListener(new ItemListener() {
@@ -205,19 +183,39 @@ public class DynamicData extends ApplicationFrame implements ViewCallback{
 					cmbSpsSelector.setModel(new javax.swing.DefaultComboBoxModel<String>(availableSPS));
                 }
 			});
+			cmbNumberOfChannels.setSelectedItem(0);
 
-			// Samples per seconds (sps) select for user choice channels
-			// Each combination "number of channels : sps" determine command sending to device  
-			cmbSpsSelector.setSelectedItem(0);
 			cmbSpsSelector.addItemListener(new ItemListener() {
 				@Override
 				public void itemStateChanged(ItemEvent e) {
 					controller.setMCUSamplesPerSecond((String) cmbSpsSelector.getSelectedItem());
 				}
 			});
+			cmbSpsSelector.setSelectedItem(0);
 
-            cmbNumberOfChannels.setSelectedItem(0);
-            cmbSpsSelector.setSelectedItem(0);
+			lbPortState.setFont(new Font("tahoma", Font.BOLD, 18));
+			lbPortState.setText(PORT_CLOSE_TXT);
+
+			chbRecord.setLabel(RECORD_TXT);
+			chbRecord.setFont(new Font("tahoma", Font.BOLD, 18));
+			chbRecord.setState(false); // record not set by default
+			chbRecord.addItemListener(new ItemListener() {
+				@Override
+				public void itemStateChanged(ItemEvent e) {
+
+				}
+			});
+
+			btnStartProcess.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					controller.doStartStopMsr();
+				}
+			});
+
+			// Panel which placed direction elements
+			JPanel dirPanel = new JPanel();
+			dirPanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 
 			dirPanel.add(cmbCOMPortNumber);
 			dirPanel.add(cmbSpsSelector);
