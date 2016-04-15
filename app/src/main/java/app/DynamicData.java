@@ -6,7 +6,6 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.HighLowRenderer;
-import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.data.time.Millisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
@@ -19,8 +18,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 public class DynamicData extends ApplicationFrame implements ViewCallback{
@@ -222,8 +219,6 @@ public class DynamicData extends ApplicationFrame implements ViewCallback{
             comboBox_chooserChaneels.setSelectedItem(0);
             comboBox_chooserSamplesPerSecond.setSelectedItem(0);
 
-
-			// добавляем разные управляющие элементы на панель
 			jpanel.add(comboBox_chooserCOMPort);
 			jpanel.add(comboBox_chooserSamplesPerSecond);
 			jpanel.add(comboBox_chooserChaneels);
@@ -235,24 +230,31 @@ public class DynamicData extends ApplicationFrame implements ViewCallback{
 			add(jpanel, "South");
 		}
 
-		private JFreeChart createChart(XYDataset xydataset, XYDataset xydataset2, XYDataset xydataset3, XYDataset xydataset4){
-			JFreeChart jfreechart = ChartFactory.createTimeSeriesChart(TITLE_CHART, AXIS_X_NAME, AXIS_Y_NAME, xydataset, true, true, false);
+		private JFreeChart createChart(XYDataset xyCh1, XYDataset xyCh2, XYDataset xyCh3, XYDataset xyCh4){
+			JFreeChart jfreechart = ChartFactory.createTimeSeriesChart(
+					TITLE_CHART,
+					AXIS_X_NAME,
+					AXIS_Y_NAME,
+					xyCh1,
+					true,
+					true,
+					false
+			);
 
 			XYPlot xyplot = (XYPlot)jfreechart.getPlot();
-			xyplot.setDataset(2, xydataset2);
-			xyplot.setDataset(3, xydataset3);
-			xyplot.setDataset(4, xydataset4);
+			xyplot.setDataset(2, xyCh2);
+			xyplot.setDataset(3, xyCh3);
+			xyplot.setDataset(4, xyCh4);
 
 			xyplot.setRenderer(2, new HighLowRenderer());
 			xyplot.setRenderer(3, new HighLowRenderer());
 			xyplot.setRenderer(4, new HighLowRenderer());
-			XYItemRenderer renderer = xyplot.getRenderer();
 
-			ValueAxis valueaxis = xyplot.getDomainAxis();
-			valueaxis.setAutoRange(true);
-			valueaxis.setFixedAutoRange(60000D);
-			valueaxis = xyplot.getRangeAxis();
-			valueaxis.setRange(MIN_AXIS_VALUE, MAX_AXIS_VALUE);
+			ValueAxis va = xyplot.getDomainAxis();
+			va.setAutoRange(true);
+			va.setFixedAutoRange(60000D);
+			va = xyplot.getRangeAxis();
+			va.setRange(MIN_AXIS_VALUE, MAX_AXIS_VALUE);
 			return jfreechart;
 		}
 
@@ -263,33 +265,7 @@ public class DynamicData extends ApplicationFrame implements ViewCallback{
 			}
 		}
 
-	} //------------------------------------ end class DemoModel
-
-
-
-
-
-
-//	public void setChoosesValuesSamplesPerSecond(String[] samplePerSeconds){
-//		switch (maxCh) {
-//			case 1:
-//				comboBox_chooserSamplesPerSecond.setModel(new javax.swing.DefaultComboBoxModel(new String[] {CH1_60_SPS_NOTDELAY[0], CH1_30_SPS_31_MS[0], CH1_5_SPS_190_MS[0]}));
-//				break;
-//			case 2:
-//				comboBox_chooserSamplesPerSecond.setModel(new javax.swing.DefaultComboBoxModel(new String[] {CH2_30_SPS_NOTDELAY[0], CH2_10_SPS_50_MS[0], CH2_5_SPS_100_MS[0]}));
-//				break;
-//			case 3:
-//				comboBox_chooserSamplesPerSecond.setModel(new javax.swing.DefaultComboBoxModel(new String[] {CH3_20_SPS_NOTDELAY[0], CH3_5_SPS_62_MS[0]}));
-//				break;
-//			case 4:
-//				comboBox_chooserSamplesPerSecond.setModel(new javax.swing.DefaultComboBoxModel(new String[] {CH4_15_SPS_NOTDELAY[0], CH4_5_SPS_45_MS[0]}));
-//				break;
-//		}
-//	}
-
-
-
-
+	}
 
 
 }
