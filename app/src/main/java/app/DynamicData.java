@@ -53,9 +53,9 @@ public class DynamicData extends ApplicationFrame implements ViewCallback{
 
 
 	public Label lbPortState;
-	public JComboBox cmbCOMPortNumber = new JComboBox();
-	public JComboBox cmbSpsSelector = new JComboBox();
-	public JComboBox cmbNumberOfChannels = new JComboBox();
+	public JComboBox<String> cmbCOMPortNumber = new JComboBox<String>();
+	public JComboBox<String> cmbSpsSelector = new JComboBox<String>();
+	public JComboBox<String> cmbNumberOfChannels = new JComboBox<String>();
 
 
 
@@ -170,7 +170,7 @@ public class DynamicData extends ApplicationFrame implements ViewCallback{
 			lbPortState.setFont(new Font("tahoma", Font.BOLD, 18));
 
 			// COM Port chooser
-			cmbCOMPortNumber.setModel(new javax.swing.DefaultComboBoxModel(NUMBERS_OF_COM_PORTS));
+			cmbCOMPortNumber.setModel(new javax.swing.DefaultComboBoxModel<String>(NUMBERS_OF_COM_PORTS));
 			cmbCOMPortNumber.setSelectedIndex(9);
 			cmbCOMPortNumber.addItemListener(new ItemListener() {
 				@Override
@@ -185,7 +185,7 @@ public class DynamicData extends ApplicationFrame implements ViewCallback{
 			});
 
 			// Number of channels select
-			cmbNumberOfChannels.setModel(new javax.swing.DefaultComboBoxModel(TOTAL_CHANNELS));
+			cmbNumberOfChannels.setModel(new javax.swing.DefaultComboBoxModel<String>(TOTAL_CHANNELS));
 			cmbNumberOfChannels.setSelectedIndex(cmbNumberOfChannels.getItemCount() - 1);
 			cmbNumberOfChannels.addItemListener(new ItemListener() {
 				@Override
@@ -196,7 +196,7 @@ public class DynamicData extends ApplicationFrame implements ViewCallback{
 					} catch (LargeChannelsSetupException e1) {
 						e1.printStackTrace();
 					}
-					cmbSpsSelector.setModel(new javax.swing.DefaultComboBoxModel(availableSPS));
+					cmbSpsSelector.setModel(new javax.swing.DefaultComboBoxModel<String>(availableSPS));
                 }
 			});
 
