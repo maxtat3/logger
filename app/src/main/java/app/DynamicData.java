@@ -66,53 +66,10 @@ public class DynamicData extends ApplicationFrame implements ViewCallback{
         controller.turnOnUSART(NUMBERS_OF_COM_PORTS[16]);
     }
 
-    static Class class$(String s){
-        Class clazz = null;
-        try {
-            clazz= Class.forName(s);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        return clazz;
-    }
-
-    @Override
-    public void setPortState(USART.PortStates portStates) {
-        if (portStates == USART.PortStates.OPEN) {
-            lbPortState.setText(PORT_OPEN_TXT);
-            lbPortState.setForeground(new Color(50, 205, 50));
-
-        } else if (portStates == USART.PortStates.CLOSE) {
-            lbPortState.setText(PORT_CLOSE_TXT);
-            lbPortState.setForeground(Color.red);
-        }
-    }
-
-    @Override
-    public void addChannel1Point(int channel1Point) {
-        series1.add(new Millisecond(), channel1Point);
-    }
-
-	@Override
-	public void addChannel2Point(int channel2Point) {
-		series2.add(new Millisecond(), channel2Point);
-	}
-
-	@Override
-	public void addChannel3Point(int channel3Point) {
-		series3.add(new Millisecond(), channel3Point);
-	}
-
-	@Override
-	public void addChannel4Point(int channel4Point) {
-		series4.add(new Millisecond(), channel4Point);
-	}
-
-
 	/**
 	 * Main panel contained chart and directions panels
 	 */
-    class MainPanel extends JPanel {
+	class MainPanel extends JPanel {
 		public MainPanel(){
 			super(new BorderLayout());
 			series1 = new TimeSeries(CHANNEL_1_TITLE_TXT, DynamicData.class$org$jfree$data$time$Millisecond != null ? DynamicData.class$org$jfree$data$time$Millisecond : (DynamicData.class$org$jfree$data$time$Millisecond = DynamicData.class$("org.jfree.data.time.Millisecond")));
@@ -142,7 +99,7 @@ public class DynamicData extends ApplicationFrame implements ViewCallback{
 				@Override
 				public void itemStateChanged(ItemEvent e) {
 					if(controller.isOpenUSARTPort()){
-                        controller.closeUSARTPort(); // may be set delay
+						controller.closeUSARTPort(); // may be set delay
 						controller.turnOnUSART(cmbCOMPortNumber.getSelectedItem().toString());
 					}else{
 						controller.turnOnUSART(cmbCOMPortNumber.getSelectedItem().toString());
@@ -162,7 +119,7 @@ public class DynamicData extends ApplicationFrame implements ViewCallback{
 						e1.printStackTrace();
 					}
 					cmbSpsSelector.setModel(new javax.swing.DefaultComboBoxModel<String>(availableSPS));
-                }
+				}
 			});
 			cmbNumberOfChannels.setSelectedItem(0);
 
@@ -214,12 +171,12 @@ public class DynamicData extends ApplicationFrame implements ViewCallback{
 		 * @param xyCh1 data set to channel 1
 		 * @param xyCh2 data set to channel 2
 		 * @param xyCh3 data set to channel 3
-         * @param xyCh4 data set to channel 4
+		 * @param xyCh4 data set to channel 4
 		 *
-         * @return build chart
+		 * @return build chart
 		 *
 		 * @see TimeSeriesCollection
-         */
+		 */
 		private JFreeChart createChart(XYDataset xyCh1, XYDataset xyCh2, XYDataset xyCh3, XYDataset xyCh4){
 			JFreeChart jfreechart = ChartFactory.createTimeSeriesChart(
 					TITLE_CHART_TXT,
@@ -248,6 +205,49 @@ public class DynamicData extends ApplicationFrame implements ViewCallback{
 			return jfreechart;
 		}
 
+	}
+
+    static Class class$(String s){
+        Class clazz = null;
+        try {
+            clazz= Class.forName(s);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return clazz;
+    }
+
+    @Override
+    public void setPortState(USART.PortStates portStates) {
+        if (portStates == USART.PortStates.OPEN) {
+            lbPortState.setText(PORT_OPEN_TXT);
+            lbPortState.setForeground(new Color(50, 205, 50));
+
+        } else if (portStates == USART.PortStates.CLOSE) {
+            lbPortState.setText(PORT_CLOSE_TXT);
+            lbPortState.setForeground(Color.red);
+        }
+    }
+
+    @Override
+    public void addChannel1Point(int channel1Point) {
+        series1.add(new Millisecond(), channel1Point);
+    }
+
+	@Override
+	public void addChannel2Point(int channel2Point) {
+		series2.add(new Millisecond(), channel2Point);
+	}
+
+	@Override
+	public void addChannel3Point(int channel3Point) {
+		series3.add(new Millisecond(), channel3Point);
+	}
+
+
+	@Override
+	public void addChannel4Point(int channel4Point) {
+		series4.add(new Millisecond(), channel4Point);
 	}
 
 
