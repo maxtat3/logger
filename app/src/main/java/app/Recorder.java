@@ -3,7 +3,6 @@ package app;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -37,14 +36,19 @@ public class Recorder {
      * @param ch1 channel 1 results
      * @param allChannels how many channels have been involved in the measure process
      */
-    public void writeResultsToFile(int allChannels, List<Integer> ch1, List<Integer> ch2,
-                                   List<Integer> ch3, List<Integer> ch4) throws LargeChannelsRecordException {
+    public void writeResultsToFile(int allChannels,
+                                   List<Integer> ch1,
+                                   List<Integer> ch2,
+                                   List<Integer> ch3,
+                                   List<Integer> ch4
+    ) throws LargeChannelsRecordException {
         if (allChannels > 4) throw new LargeChannelsRecordException();
         try {
-            FileWriter file = new FileWriter("./" + PREFIX_FILE + getCurrentDate() + CSV_EXT_FILE);
             buffer.append(HEADER_FILE).append(LFCR);
+            // Discard last values channels - focused on minimum list size.
+            int minSizeList = findMin(ch1.size(), ch2.size(), ch3.size(), ch4.size());
             int line = 0; // line number on which data was stored
-            while ( (ch1.size() - 1) != line ){
+            while ( (minSizeList - 1) != line ){
                 switch (allChannels) {
                     case 1:
                         buffer.append(line).append(TAB)
@@ -75,11 +79,12 @@ public class Recorder {
                 }
                 line++;
             }
-            ch1.removeAll(ch1); //todo - may be replace to clear method, because this faster !
-//            ch2.removeAll(ch2); // may be used this ?
-//            ch3.removeAll(ch3);
-//            ch4.removeAll(ch4);
+            ch1.clear();
+            ch2.clear();
+            ch3.clear();
+            ch4.clear();
 
+            FileWriter file = new FileWriter("./" + PREFIX_FILE + getCurrentDate() + CSV_EXT_FILE);
             file.write(String.valueOf(buffer));
             file.flush(); //clear buffer and write to file
             file.close();
@@ -87,6 +92,32 @@ public class Recorder {
             System.out.println("ошибка в методе writeResultsToFile !");
             LOG.log(Level.WARNING, "IO error !");
         }
+    }
+
+    /**
+     * Find minimum for 4 integer numbers.
+     * Note - this check is correct if num1 not 0 !
+     * Value 0 can be: num2, num3, num4.
+     *
+     * @param num1 number 1 (!= 0)
+     * @param num2 number 2
+     * @param num3 number 3
+     * @param num4 number 4
+     *
+     * @return minimum number
+     */
+    private int findMin(int num1, int num2, int num3, int num4) {
+        int min = num1;
+        if (num2 != 0 && min > num2) {
+            min = num2;
+        }
+        if (num3 != 0 && min > num3) {
+            min = num3;
+        }
+        if (num4 != 0 && min > num4) {
+            min = num4;
+        }
+        return min;
     }
 
     /**

@@ -291,9 +291,10 @@ public class Controller implements ControllerCallback{
     private void processReceivedADCData(int adcAtomicOnePoint) {
         if(channelCounter == CH_1_INT) {
             //possible activate accordance chart only one channel
-            if (maxCh == CH_1_INT && accordanceChart(true))
+            if (maxCh == CH_1_INT && accordanceChart(true)) {
+                result.addChannel1Val(adcAtomicOnePoint);
                 viewCallback.addChannel1Point(adcAtomicOnePoint);
-            result.addChannel1Val(adcAtomicOnePoint);
+            }
 
             if (maxCh > CH_1_INT) {
                 result.addChannel1Val(adcAtomicOnePoint);

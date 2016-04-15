@@ -140,7 +140,7 @@ public class DynamicData extends ApplicationFrame implements ViewCallback{
 			chbRecord.addItemListener(new ItemListener() {
 				@Override
 				public void itemStateChanged(ItemEvent e) {
-
+					controller.doRecord();
 				}
 			});
 
