@@ -70,7 +70,11 @@ public class DynamicData extends ApplicationFrame implements ViewCallback{
     private Controller controller;
 
 
-
+	/**
+	 * Create application main window.
+	 *
+	 * @param s title main window, placed in top
+     */
     public DynamicData (String s){
         super(s);
         MainPanel mainPanel = new MainPanel();
@@ -125,6 +129,9 @@ public class DynamicData extends ApplicationFrame implements ViewCallback{
 
 //todo добавить bool isOpenPort. Эта переменная может применятся для блокировки UI если нет подключения к порту
 
+	/**
+	 * Main panel contained chart and directions panels
+	 */
     class MainPanel extends JPanel {
 		public MainPanel(){
 			super(new BorderLayout());
@@ -224,6 +231,17 @@ public class DynamicData extends ApplicationFrame implements ViewCallback{
 			add(dirPanel, "South");
 		}
 
+		/**
+		 * Create chart from 4 channels times series collection
+		 * @param xyCh1 data set to channel 1
+		 * @param xyCh2 data set to channel 2
+		 * @param xyCh3 data set to channel 3
+         * @param xyCh4 data set to channel 4
+		 *
+         * @return build chart
+		 *
+		 * @see TimeSeriesCollection
+         */
 		private JFreeChart createChart(XYDataset xyCh1, XYDataset xyCh2, XYDataset xyCh3, XYDataset xyCh4){
 			JFreeChart jfreechart = ChartFactory.createTimeSeriesChart(
 					TITLE_CHART_TXT,
