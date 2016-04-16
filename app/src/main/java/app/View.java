@@ -170,13 +170,7 @@ public class View extends ApplicationFrame implements ViewCallback{
 		cmbNumberOfChannels.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
-				String[] availableSPS = new String[0];
-				try {
-					availableSPS = controller.setChannelsNum(cmbNumberOfChannels.getSelectedIndex());
-				} catch (LargeChannelsSetupException e1) {
-					e1.printStackTrace();
-				}
-				cmbSpsSelector.setModel(new DefaultComboBoxModel<String>(availableSPS));
+				setAvailableSPS();
 			}
 		});
 		cmbNumberOfChannels.setSelectedItem(0);
@@ -187,13 +181,7 @@ public class View extends ApplicationFrame implements ViewCallback{
 				controller.setMCUSamplesPerSecond((String) cmbSpsSelector.getSelectedItem());
 			}
 		});
-		String[] availableSPS = new String[0];
-		try {
-			availableSPS = controller.setChannelsNum(cmbNumberOfChannels.getSelectedIndex());
-		} catch (LargeChannelsSetupException e) {
-			e.printStackTrace();
-		}
-		cmbSpsSelector.setModel(new DefaultComboBoxModel<String>(availableSPS));
+		setAvailableSPS(); //set default sps for selected channels when start app
 
 		lbPortState.setFont(new Font("tahoma", Font.BOLD, 18));
 		lbPortState.setText(PORT_CLOSE_TXT);
@@ -214,6 +202,23 @@ public class View extends ApplicationFrame implements ViewCallback{
 				controller.doStartStopMsr();
 			}
 		});
+	}
+
+	/**
+	 * Stored temp sps for selected channel
+	 */
+	String[] availableSPS = new String[0];
+
+	/**
+	 * Set available samples per second (sps) for select channel
+	 */
+	private void setAvailableSPS() {
+		try {
+			availableSPS = controller.setChannelsNum(cmbNumberOfChannels.getSelectedIndex());
+		} catch (LargeChannelsSetupException e1) {
+			e1.printStackTrace();
+		}
+		cmbSpsSelector.setModel(new DefaultComboBoxModel<String>(availableSPS));
 	}
 
     static Class class$(String s){
