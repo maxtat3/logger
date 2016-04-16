@@ -42,6 +42,19 @@ public class View extends ApplicationFrame implements ViewCallback{
 	private static final double MIN_AXIS_VALUE = 0D;
 	private static final double MAX_AXIS_VALUE = 255D;
 
+	/**
+	 * Default COM port class should be applied for UI combobox elements selector.
+	 * Value INDEX indicate index of array of all COM port list.
+	 *
+	 * @see DefaultCOMPort#INDEX
+	 * @see USART#NUMBERS_OF_COM_PORTS
+	 */
+	private static final class DefaultCOMPort {
+		private static final int INDEX = 16;
+		public static final String NAME = USART.NUMBERS_OF_COM_PORTS[INDEX];
+		public static final int NUMBER = INDEX;
+	}
+
 	private TimeSeries series1;
 	private TimeSeries series2;
 	private TimeSeries series3;
@@ -69,7 +82,7 @@ public class View extends ApplicationFrame implements ViewCallback{
         MainPanel mainPanel = new MainPanel();
         setContentPane(mainPanel);
         controller = new Controller(this);
-        controller.turnOnUSART(USART.NUMBERS_OF_COM_PORTS[16]);
+        controller.turnOnUSART(DefaultCOMPort.NAME);
 		initDirPanelComponents();
     }
 
@@ -152,7 +165,6 @@ public class View extends ApplicationFrame implements ViewCallback{
 	 */
 	private void initDirPanelComponents() {
 		cmbCOMPortNumber.setModel(new DefaultComboBoxModel<String>(USART.NUMBERS_OF_COM_PORTS));
-		cmbCOMPortNumber.setSelectedIndex(9);
 		cmbCOMPortNumber.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
@@ -164,13 +176,14 @@ public class View extends ApplicationFrame implements ViewCallback{
 				}
 			}
 		});
+		cmbCOMPortNumber.setSelectedIndex(DefaultCOMPort.NUMBER);
 
 		cmbNumberOfChannels.setModel(new DefaultComboBoxModel<String>(CHANNELS_NAMES));
 		cmbNumberOfChannels.setSelectedIndex(cmbNumberOfChannels.getItemCount() - 1);
 		cmbNumberOfChannels.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
-				setAvailableSPS();
+				setAvailableSPSInSelector();
 			}
 		});
 		cmbNumberOfChannels.setSelectedItem(0);
@@ -181,7 +194,7 @@ public class View extends ApplicationFrame implements ViewCallback{
 				controller.setMCUSamplesPerSecond((String) cmbSpsSelector.getSelectedItem());
 			}
 		});
-		setAvailableSPS(); //set default sps for selected channels when start app
+		setAvailableSPSInSelector(); //set default sps for selected channels when start app
 
 		lbPortState.setFont(new Font("tahoma", Font.BOLD, 18));
 		lbPortState.setText(PORT_CLOSE_TXT);
@@ -210,9 +223,11 @@ public class View extends ApplicationFrame implements ViewCallback{
 	String[] availableSPS = new String[0];
 
 	/**
-	 * Set available samples per second (sps) for select channel
+	 * Set available samples per second (sps) for select channel in combobox selector
+	 *
+	 * @see #cmbSpsSelector
 	 */
-	private void setAvailableSPS() {
+	private void setAvailableSPSInSelector() {
 		try {
 			availableSPS = controller.setChannelsNum(cmbNumberOfChannels.getSelectedIndex());
 		} catch (LargeChannelsSetupException e1) {
