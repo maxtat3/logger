@@ -22,8 +22,8 @@ import java.awt.event.ItemListener;
 
 public class View extends ApplicationFrame implements ViewCallback{
 
-	public static final String PORT_CLOSE_TXT = "   Порт занят/закрыт ";
-	public static final String PORT_OPEN_TXT = "   Порт открыт ";
+	private static final String PORT_CLOSE_TXT = "   Порт занят/закрыт ";
+	private static final String PORT_OPEN_TXT = "   Порт открыт ";
 	private static final String[] CHANNELS_NAMES = {
 			Channel.Channels.ONE.getName(),
 			Channel.Channels.TWO.getName(),
