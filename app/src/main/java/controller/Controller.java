@@ -1,6 +1,6 @@
 package controller;
 
-import domain.Channel;
+import model.Channel;
 import domain.Result;
 import exception.LargeChannelsRecordException;
 import exception.LargeChannelsSetupException;

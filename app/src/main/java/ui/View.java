@@ -1,7 +1,7 @@
 package ui;
 
 import controller.Controller;
-import domain.Channel;
+import model.Channel;
 import exception.LargeChannelsSetupException;
 import model.USART;
 import org.jfree.chart.ChartFactory;
