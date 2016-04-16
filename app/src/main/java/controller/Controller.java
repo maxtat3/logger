@@ -227,7 +227,7 @@ public class Controller implements ControllerCallback {
      *
      * @see #setChannelsNum(int)
      */
-    public void setMCUSamplesPerSecond(String chooseValSps){//todo  "s" move to class
+    public void setSPS(String chooseValSps){//todo  "s" move to class
         try {
             sendString("s");    //спец символ - установка mcu в режим выбора типа задержки
             Thread.sleep(100);

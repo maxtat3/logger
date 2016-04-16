@@ -68,8 +68,8 @@ public class View extends ApplicationFrame implements ViewCallback {
 	private final JComboBox<String> cmbCOMPortNumber = new JComboBox<String>();
 	private final JComboBox<String> cmbNumberOfChannels = new JComboBox<String>();
 	private final JComboBox<String> cmbSpsSelector = new JComboBox<String>();
-	private Label lbPortState = new Label();
-	private Checkbox chbRecord = new Checkbox();
+	private final Label lbPortState = new Label();
+	private final Checkbox chbRecord = new Checkbox();
 	private final JButton btnStartProcess = new JButton();
 
 	private static Class class$org$jfree$data$time$Millisecond; /* synthetic field */
@@ -183,21 +183,21 @@ public class View extends ApplicationFrame implements ViewCallback {
 		cmbCOMPortNumber.setSelectedIndex(DefaultCOMPort.NUMBER);
 
 		cmbNumberOfChannels.setModel(new DefaultComboBoxModel<String>(CHANNELS_NAMES));
-		cmbNumberOfChannels.setSelectedIndex(cmbNumberOfChannels.getItemCount() - 1);
 		cmbNumberOfChannels.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				setAvailableSPSInSelector();
 			}
 		});
-		cmbNumberOfChannels.setSelectedItem(0);
+		cmbNumberOfChannels.setSelectedIndex(cmbNumberOfChannels.getItemCount() - 1);
 
 		cmbSpsSelector.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
-				controller.setMCUSamplesPerSecond((String) cmbSpsSelector.getSelectedItem());
+				controller.setSPS((String) cmbSpsSelector.getSelectedItem());
 			}
 		});
+
 		setAvailableSPSInSelector(); //set default sps for selected channels when start app
 
 		lbPortState.setFont(new Font("tahoma", Font.BOLD, 18));
@@ -238,6 +238,7 @@ public class View extends ApplicationFrame implements ViewCallback {
 			e1.printStackTrace();
 		}
 		cmbSpsSelector.setModel(new DefaultComboBoxModel<String>(availableSPS));
+		controller.setSPS((String) cmbSpsSelector.getSelectedItem());
 	}
 
     static Class class$(String s){
