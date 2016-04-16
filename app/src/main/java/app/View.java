@@ -66,7 +66,7 @@ public class View extends ApplicationFrame implements ViewCallback{
 	private final JComboBox<String> cmbSpsSelector = new JComboBox<String>();
 	private Label lbPortState = new Label();
 	private Checkbox chbRecord = new Checkbox();
-	private final JButton btnStartProcess = new JButton(START_STOP_TXT);
+	private final JButton btnStartProcess = new JButton();
 
 	private static Class class$org$jfree$data$time$Millisecond; /* synthetic field */
     private Controller controller;
@@ -197,7 +197,6 @@ public class View extends ApplicationFrame implements ViewCallback{
 		setAvailableSPSInSelector(); //set default sps for selected channels when start app
 
 		lbPortState.setFont(new Font("tahoma", Font.BOLD, 18));
-		lbPortState.setText(PORT_CLOSE_TXT);
 
 		chbRecord.setLabel(RECORD_TXT);
 		chbRecord.setFont(new Font("tahoma", Font.BOLD, 18));
@@ -215,6 +214,7 @@ public class View extends ApplicationFrame implements ViewCallback{
 				controller.doStartStopMsr();
 			}
 		});
+		btnStartProcess.setText(START_STOP_TXT);
 	}
 
 	/**
@@ -248,14 +248,14 @@ public class View extends ApplicationFrame implements ViewCallback{
 
     @Override
     public void setPortState(USART.PortStates portStates) {
-        if (portStates == USART.PortStates.OPEN) {
+		if (portStates == USART.PortStates.OPEN) {
             lbPortState.setText(PORT_OPEN_TXT);
             lbPortState.setForeground(new Color(50, 205, 50));
 
-        } else if (portStates == USART.PortStates.CLOSE) {
-            lbPortState.setText(PORT_CLOSE_TXT);
-            lbPortState.setForeground(Color.red);
-        }
+		} else if (portStates == USART.PortStates.CLOSE) {
+			lbPortState.setText(PORT_CLOSE_TXT);
+			lbPortState.setForeground(Color.red);
+		}
     }
 
     @Override
