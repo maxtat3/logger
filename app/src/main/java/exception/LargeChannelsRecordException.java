@@ -1,4 +1,6 @@
-package app;
+package exception;
+
+import utils.Recorder;
 
 /**
  * Thrown to indicate that a transferred more then the numbers of measure

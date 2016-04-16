@@ -1,5 +1,7 @@
-package app;
+package model;
 
+import controller.Controller;
+import controller.ControllerCallback;
 import jssc.SerialPort;
 import jssc.SerialPortEvent;
 import jssc.SerialPortEventListener;

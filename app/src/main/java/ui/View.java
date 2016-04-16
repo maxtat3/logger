@@ -1,5 +1,9 @@
-package app;
+package ui;
 
+import controller.Controller;
+import domain.Channel;
+import exception.LargeChannelsSetupException;
+import model.USART;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -20,7 +24,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 
-public class View extends ApplicationFrame implements ViewCallback{
+public class View extends ApplicationFrame implements ViewCallback {
 
 	private static final String PORT_CLOSE_TXT = "   Порт занят/закрыт ";
 	private static final String PORT_OPEN_TXT = "   Порт открыт ";

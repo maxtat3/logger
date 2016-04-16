@@ -1,4 +1,4 @@
-package app;
+package domain;
 
 /**
  * Channels and their samples per second.

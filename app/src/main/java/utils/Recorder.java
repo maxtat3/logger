@@ -1,4 +1,6 @@
-package app;
+package utils;
+
+import exception.LargeChannelsRecordException;
 
 import java.io.FileWriter;
 import java.io.IOException;

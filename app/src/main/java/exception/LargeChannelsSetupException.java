@@ -1,4 +1,6 @@
-package app;
+package exception;
+
+import controller.Controller;
 
 /**
  * Thrown when try to set a greater number of channels that can to accept handler.

@@ -1,4 +1,7 @@
-package app;
+package ui;
+
+import controller.Controller;
+import model.USART;
 
 /**
  * What will be translated: controller -> UI
@@ -11,11 +14,11 @@ public interface ViewCallback {
 
     /**
      * Set COM port state in UI.
-     * List port states in {@link app.USART.PortStates}
+     * List port states in {@link USART.PortStates}
      * This set COM port state in UI label.
      *
      * @param portStates available USART port states lists
-     *        in {@link app.USART.PortStates}
+     *        in {@link USART.PortStates}
      */
     void setPortState(USART.PortStates portStates);
 

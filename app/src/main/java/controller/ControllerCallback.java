@@ -1,4 +1,7 @@
-package app;
+package controller;
+
+import model.USART;
+import ui.ViewCallback;
 
 /**
  * What will be translated: Model(USART) -> Controller.
@@ -17,7 +20,7 @@ public interface ControllerCallback {
      * Controller must be set port state in UI.
      *
      * @param portStates available USART port states lists
-     *        in {@link app.USART.PortStates}
+     *        in {@link USART.PortStates}
      */
     void setPortState(USART.PortStates portStates);
 

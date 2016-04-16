@@ -1,4 +1,13 @@
-package app;
+package controller;
+
+import domain.Channel;
+import domain.Result;
+import exception.LargeChannelsRecordException;
+import exception.LargeChannelsSetupException;
+import model.USART;
+import ui.View;
+import ui.ViewCallback;
+import utils.Recorder;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -12,7 +21,7 @@ import java.util.logging.Logger;
  * @see View
  * @see USART
  */
-public class Controller implements ControllerCallback{
+public class Controller implements ControllerCallback {
 
     // Commands channels selected to translate to COM port
     public static final String CH_1_CMD = String.valueOf(Channel.Channels.ONE.getNumber());

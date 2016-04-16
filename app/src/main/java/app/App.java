@@ -2,6 +2,7 @@ package app;
 
 
 import org.jfree.ui.RefineryUtilities;
+import ui.View;
 
 public class App {
 
