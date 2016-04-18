@@ -32,7 +32,7 @@ public class USART {
      * @see USART#NUMBERS_OF_COM_PORTS
      */
     public static final class DefaultCOMPort {
-        private static final int INDEX = 15;
+        private static final int INDEX = 16;
         public static final String NAME = NUMBERS_OF_COM_PORTS[INDEX];
         public static final int NUMBER = INDEX;
     }
