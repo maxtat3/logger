@@ -34,6 +34,11 @@ public class Controller implements ControllerCallback {
     public static final int CH_3_INT = Channel.Channels.THREE.getNumber();
     public static final int CH_4_INT = Channel.Channels.FOUR.getNumber();
 
+	/**
+     * Setup device in delay type mode
+     */
+    public static final String SET_DELAY_TYPE_CMD = "s";
+
     /**
      * Data model for communicate with device.
      * Created in this class.
@@ -246,9 +251,9 @@ public class Controller implements ControllerCallback {
      *
      * @see #setChannelsNum(int)
      */
-    public void setSPS(String chooseValSps){//todo  "s" move to class
+    public void setSPS(String chooseValSps){
         try {
-            sendStringToDevice("s");    //спец символ - установка mcu в режим выбора типа задержки
+            sendStringToDevice(SET_DELAY_TYPE_CMD);
             Thread.sleep(100);
 
             if(chooseValSps.equals(channel.getCh1And60sps().getSpsName())){
