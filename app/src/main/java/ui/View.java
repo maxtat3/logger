@@ -83,17 +83,8 @@ public class View extends ApplicationFrame implements ViewCallback {
 	class MainPanel extends JPanel {
 		public MainPanel(){
 			super(new BorderLayout());
-			series1 = new TimeSeries(CHANNEL_1_TITLE_TXT, View.class$org$jfree$data$time$Millisecond != null ? View.class$org$jfree$data$time$Millisecond : (View.class$org$jfree$data$time$Millisecond = View.class$("org.jfree.data.time.Millisecond")));
-			series2 = new TimeSeries(CHANNEL_2_TITLE_TXT, View.class$org$jfree$data$time$Millisecond != null ? View.class$org$jfree$data$time$Millisecond : (View.class$org$jfree$data$time$Millisecond = View.class$("org.jfree.data.time.Millisecond")));
-			series3 = new TimeSeries(CHANNEL_3_TITLE_TXT, View.class$org$jfree$data$time$Millisecond != null ? View.class$org$jfree$data$time$Millisecond : (View.class$org$jfree$data$time$Millisecond = View.class$("org.jfree.data.time.Millisecond")));
-			series4 = new TimeSeries(CHANNEL_4_TITLE_TXT, View.class$org$jfree$data$time$Millisecond != null ? View.class$org$jfree$data$time$Millisecond : (View.class$org$jfree$data$time$Millisecond = View.class$("org.jfree.data.time.Millisecond")));
 
-			TimeSeriesCollection tsc1 = new TimeSeriesCollection(series1);
-			TimeSeriesCollection tsc2 = new TimeSeriesCollection(series2);
-			TimeSeriesCollection tsc3 = new TimeSeriesCollection(series3);
-			TimeSeriesCollection tsc4 = new TimeSeriesCollection(series4);
-
-			ChartPanel chartpanel = new ChartPanel(createChart(tsc1, tsc2, tsc3, tsc4));
+			ChartPanel chartpanel = new ChartPanel(createChart());
 			chartpanel.setPreferredSize(new Dimension(900, 500));
 
 			// Panel which placed direction elements
@@ -112,16 +103,21 @@ public class View extends ApplicationFrame implements ViewCallback {
 		}
 		/**
 		 * Create chart from 4 channels times series collection
-		 * @param xyCh1 data set to channel 1
-		 * @param xyCh2 data set to channel 2
-		 * @param xyCh3 data set to channel 3
-		 * @param xyCh4 data set to channel 4
 		 *
-		 * @return build chart
-		 *
+		 * @return building chart
 		 * @see TimeSeriesCollection
 		 */
-		private JFreeChart createChart(XYDataset xyCh1, XYDataset xyCh2, XYDataset xyCh3, XYDataset xyCh4){
+		private JFreeChart createChart(){
+			series1 = new TimeSeries(CHANNEL_1_TITLE_TXT, View.class$org$jfree$data$time$Millisecond != null ? View.class$org$jfree$data$time$Millisecond : (View.class$org$jfree$data$time$Millisecond = View.class$("org.jfree.data.time.Millisecond")));
+			series2 = new TimeSeries(CHANNEL_2_TITLE_TXT, View.class$org$jfree$data$time$Millisecond != null ? View.class$org$jfree$data$time$Millisecond : (View.class$org$jfree$data$time$Millisecond = View.class$("org.jfree.data.time.Millisecond")));
+			series3 = new TimeSeries(CHANNEL_3_TITLE_TXT, View.class$org$jfree$data$time$Millisecond != null ? View.class$org$jfree$data$time$Millisecond : (View.class$org$jfree$data$time$Millisecond = View.class$("org.jfree.data.time.Millisecond")));
+			series4 = new TimeSeries(CHANNEL_4_TITLE_TXT, View.class$org$jfree$data$time$Millisecond != null ? View.class$org$jfree$data$time$Millisecond : (View.class$org$jfree$data$time$Millisecond = View.class$("org.jfree.data.time.Millisecond")));
+
+			TimeSeriesCollection xyCh1 = new TimeSeriesCollection(series1);
+			TimeSeriesCollection xyCh2 = new TimeSeriesCollection(series2);
+			TimeSeriesCollection xyCh3 = new TimeSeriesCollection(series3);
+			TimeSeriesCollection xyCh4 = new TimeSeriesCollection(series4);
+
 			JFreeChart jfreechart = ChartFactory.createTimeSeriesChart(
 					TITLE_CHART_TXT,
 					AXIS_X_NAME_TXT,
@@ -148,7 +144,6 @@ public class View extends ApplicationFrame implements ViewCallback {
 			va.setRange(MIN_AXIS_VALUE, MAX_AXIS_VALUE);
 			return jfreechart;
 		}
-
 	}
 
 	/**
