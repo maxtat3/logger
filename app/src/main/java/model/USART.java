@@ -24,6 +24,19 @@ public class USART {
             "/dev/ttyACM0", "/dev/ttyACM1", "/dev/ttyACM2", "/dev/ttyACM3",
     };
 
+    /**
+     * Default COM port class should be applied for UI combobox elements selector.
+     * Value INDEX indicate index of array of all COM port list.
+     *
+     * @see DefaultCOMPort#INDEX
+     * @see USART#NUMBERS_OF_COM_PORTS
+     */
+    public static final class DefaultCOMPort {
+        private static final int INDEX = 15;
+        public static final String NAME = NUMBERS_OF_COM_PORTS[INDEX];
+        public static final int NUMBER = INDEX;
+    }
+
     private SerialPort serialPort;
 
     /**
@@ -38,6 +51,7 @@ public class USART {
 
     public USART(ControllerCallback controllerCallback) {
         this.controllerCallback = controllerCallback;
+        serialPort = new SerialPort(DefaultCOMPort.NAME);
     }
 
 
@@ -95,7 +109,6 @@ public class USART {
         serialPort = new SerialPort(portName);
         try {
             serialPort.openPort();
-//
             controllerCallback.setPortState(PortStates.OPEN);
             serialPort.setParams(SerialPort.BAUDRATE_9600,
                     SerialPort.DATABITS_8,

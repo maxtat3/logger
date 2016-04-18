@@ -101,35 +101,54 @@ public class Controller implements ControllerCallback {
      */
 
     /**
-     * Turning on and do initialization USART module
+     * Turning on and do initialization USART module in the device.
+     * The parameter must be to be transmitted port name from this
+     * {@link USART#NUMBERS_OF_COM_PORTS} list.
+     * In begin checking is open default COM port. When port opened,
+     * he is closed, and applied new port name - open new port.
+     *
+     * @param portName USART COM port name
+     * @see model.USART.DefaultCOMPort
      */
-    public void turnOnUSART(String portName) { //todo - may be set return boolean result !?
-        usart.init(portName);
+    public void connectToDevice(String portName) { //todo - may be set return boolean result !?
+        try {
+            if (isOpenUSARTPort()) {
+                closeUSARTPort();
+                usart.init(portName);
+            } else {
+                usart.init(portName);
+            }
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
     }
 
 
     /**
-     * Check state - is open USART COM Port ?
-     * @return true - COM port assigned in {@link Controller#turnOnUSART(String)} method open
+     * Send text string to opened COM port USART module in the device .
+     *
+     * @param text transmitted to open COM port text as String
      */
-    public boolean isOpenUSARTPort() {
+    public void sendStringToDevice(String text) {
+        usart.writeString(text);
+    }
+
+    /**
+     * Check state - is open USART COM Port ?
+     *
+     * @return true - is COM port open
+     */
+    private boolean isOpenUSARTPort() {
         return usart.isOpen();
     }
 
     /**
-     * Close COM port
+     * Close COM port.
+     *
      * @return true - is COM port closed
      */
-    public boolean closeUSARTPort() {
+    private boolean closeUSARTPort() {
         return usart.close();
-    }
-
-    /**
-     * Send text to opened COM port.
-     * @param text transmitted to open COM port text as String
-     */
-    public void sendString(String text) {
-        usart.writeString(text);
     }
 
     /**
@@ -154,7 +173,7 @@ public class Controller implements ControllerCallback {
                 }
             //старт измерений
         }else{
-            sendString(CH_1_CMD);
+            sendStringToDevice(CH_1_CMD);
             isStartAction = true;
         }
 
@@ -229,32 +248,32 @@ public class Controller implements ControllerCallback {
      */
     public void setSPS(String chooseValSps){//todo  "s" move to class
         try {
-            sendString("s");    //спец символ - установка mcu в режим выбора типа задержки
+            sendStringToDevice("s");    //спец символ - установка mcu в режим выбора типа задержки
             Thread.sleep(100);
 
             if(chooseValSps.equals(channel.getCh1And60sps().getSpsName())){
-                sendString(channel.getCh1And60sps().getCmd());
+                sendStringToDevice(channel.getCh1And60sps().getCmd());
             }else if(chooseValSps.equals(channel.getCh1And30sps().getSpsName())) {
-                sendString(channel.getCh1And30sps().getCmd());
+                sendStringToDevice(channel.getCh1And30sps().getCmd());
             }else if(chooseValSps.equals(channel.getCh1And5sps().getSpsName())){
-                sendString(channel.getCh1And5sps().getCmd());
+                sendStringToDevice(channel.getCh1And5sps().getCmd());
 
             }else if(chooseValSps.equals(channel.getCh2And30sps().getSpsName())){
-                sendString(channel.getCh2And30sps().getCmd());
+                sendStringToDevice(channel.getCh2And30sps().getCmd());
             }else if(chooseValSps.equals(channel.getCh2And10sps().getSpsName())){
-                sendString(channel.getCh2And10sps().getCmd());
+                sendStringToDevice(channel.getCh2And10sps().getCmd());
             }else if(chooseValSps.equals(channel.getCh2And5sps().getSpsName())){
-                sendString(channel.getCh2And5sps().getCmd());
+                sendStringToDevice(channel.getCh2And5sps().getCmd());
 
             }else if(chooseValSps.equals(channel.getCh3And20sps().getSpsName())){
-                sendString(channel.getCh3And20sps().getCmd());
+                sendStringToDevice(channel.getCh3And20sps().getCmd());
             }else if(chooseValSps.equals(channel.getCh3And5sps().getSpsName())){
-                sendString(channel.getCh3And5sps().getCmd());
+                sendStringToDevice(channel.getCh3And5sps().getCmd());
 
             }else if(chooseValSps.equals(channel.getCh4And15sps().getSpsName())){
-                sendString(channel.getCh4And15sps().getCmd());
+                sendStringToDevice(channel.getCh4And15sps().getCmd());
             }else if(chooseValSps.equals(channel.getCh4And5sps().getSpsName())){
-                sendString(channel.getCh4And5sps().getCmd());
+                sendStringToDevice(channel.getCh4And5sps().getCmd());
             }
 
         }catch (InterruptedException ex) {
@@ -355,35 +374,35 @@ public class Controller implements ControllerCallback {
     private void sendNextChannelRequest() {
         if (channelCounter == CH_1_INT) {
             if (maxCh == CH_1_INT) {
-                sendString(CH_1_CMD);
+                sendStringToDevice(CH_1_CMD);
                 channelCounter = CH_1_INT;
             }
             else if (maxCh > CH_1_INT) {
-                sendString(CH_2_CMD);
+                sendStringToDevice(CH_2_CMD);
                 channelCounter = CH_2_INT;
             }
         }
         else if (channelCounter == CH_2_INT){
             if (maxCh == CH_2_INT) {
-                sendString(CH_1_CMD);
+                sendStringToDevice(CH_1_CMD);
                 channelCounter = CH_1_INT;
             }else if (maxCh > CH_2_INT) {
-                sendString(CH_3_CMD);
+                sendStringToDevice(CH_3_CMD);
                 channelCounter = CH_3_INT;
             }
         }
         else if (channelCounter == CH_3_INT){
             if (maxCh == CH_3_INT) {
-                sendString(CH_1_CMD);
+                sendStringToDevice(CH_1_CMD);
                 channelCounter = CH_1_INT;
             }else if (maxCh > CH_3_INT) {
-                sendString(CH_4_CMD);
+                sendStringToDevice(CH_4_CMD);
                 channelCounter = CH_4_INT;
             }
         }
         else if (channelCounter == CH_4_INT){
             if (maxCh == CH_4_INT) {
-                sendString(CH_1_CMD);
+                sendStringToDevice(CH_1_CMD);
                 channelCounter = CH_1_INT;
             }
         }

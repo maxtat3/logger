@@ -46,19 +46,6 @@ public class View extends ApplicationFrame implements ViewCallback {
 	private static final double MIN_AXIS_VALUE = 0D;
 	private static final double MAX_AXIS_VALUE = 255D;
 
-	/**
-	 * Default COM port class should be applied for UI combobox elements selector.
-	 * Value INDEX indicate index of array of all COM port list.
-	 *
-	 * @see DefaultCOMPort#INDEX
-	 * @see USART#NUMBERS_OF_COM_PORTS
-	 */
-	private static final class DefaultCOMPort {
-		private static final int INDEX = 16;
-		public static final String NAME = USART.NUMBERS_OF_COM_PORTS[INDEX];
-		public static final int NUMBER = INDEX;
-	}
-
 	private TimeSeries series1;
 	private TimeSeries series2;
 	private TimeSeries series3;
@@ -83,10 +70,10 @@ public class View extends ApplicationFrame implements ViewCallback {
      */
     public View(String title){
         super(title);
-        MainPanel mainPanel = new MainPanel();
-        setContentPane(mainPanel);
-        controller = new Controller(this);
-        controller.turnOnUSART(DefaultCOMPort.NAME);
+	    controller = new Controller(this);
+	    controller.connectToDevice(USART.DefaultCOMPort.NAME);
+	    MainPanel mainPanel = new MainPanel();
+	    setContentPane(mainPanel);
 		initDirPanelComponents();
     }
 
@@ -172,15 +159,10 @@ public class View extends ApplicationFrame implements ViewCallback {
 		cmbCOMPortNumber.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
-				if(controller.isOpenUSARTPort()){
-					controller.closeUSARTPort(); // may be set delay
-					controller.turnOnUSART(cmbCOMPortNumber.getSelectedItem().toString());
-				}else{
-					controller.turnOnUSART(cmbCOMPortNumber.getSelectedItem().toString());
-				}
+				controller.connectToDevice(cmbCOMPortNumber.getSelectedItem().toString());
 			}
 		});
-		cmbCOMPortNumber.setSelectedIndex(DefaultCOMPort.NUMBER);
+		cmbCOMPortNumber.setSelectedIndex(USART.DefaultCOMPort.NUMBER);
 
 		cmbNumberOfChannels.setModel(new DefaultComboBoxModel<String>(CHANNELS_NAMES));
 		cmbNumberOfChannels.addItemListener(new ItemListener() {
