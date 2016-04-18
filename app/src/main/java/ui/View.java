@@ -26,6 +26,7 @@ import java.awt.event.ItemListener;
 
 public class View extends ApplicationFrame implements ViewCallback {
 
+	private static final String TITLE_CHART_TXT = "Осциллограф - регистратор";
 	private static final String PORT_CLOSE_TXT = "   Порт занят/закрыт ";
 	private static final String PORT_OPEN_TXT = "   Порт открыт ";
 	private static final String[] CHANNELS_NAMES = {
@@ -40,7 +41,6 @@ public class View extends ApplicationFrame implements ViewCallback {
 	private static final String CHANNEL_4_TITLE_TXT = "ADC data 4";
 	private static final String START_STOP_TXT = "Старт/стоп";
 	private static final String RECORD_TXT = "Запись ";
-	private static final String TITLE_CHART_TXT = "Осциллограф - самописец";
 	private static final String AXIS_X_NAME_TXT = "Время";
 	private static final String AXIS_Y_NAME_TXT = "Значение";
 	private static final double MIN_AXIS_VALUE = 0D;
