@@ -100,8 +100,9 @@ crashlytics-build.properties
 *.dSYM/
 
 # Other generated files
-.eep
-.lss
-.lst
-.map
-.sym
+*.eep
+*.lss
+*.lst
+*.map
+*.sym
+mcu/.dep/
